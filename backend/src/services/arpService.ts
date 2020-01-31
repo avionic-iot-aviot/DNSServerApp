@@ -1,6 +1,9 @@
 const arp1 = require('arp-a');
 let tbl: any = { mac_addresses: {} };
 const cfg = require('config');
+import { Utilities } from '../shared/utilities';
+
+
 export default class PingService {
 
     async getElementsFromArpTable() {
@@ -23,5 +26,22 @@ export default class PingService {
         } catch (error) {
             console.log("ERRR", error);
         }
+    }
+
+    async contactGW() {
+        await tbl.mac_addresses.forEach(async (ipaddrs: string[]) => {
+            await ipaddrs.forEach(async (ip: string) => {
+                let request_data = {
+                    url: `${ip}/ping`,
+                    method: 'POST',
+                    form: {
+                        params: {
+                            ips: ipaddrs
+                        }
+                    }
+                };
+                await Utilities.request(request_data)
+            });
+        });
     }
 }
