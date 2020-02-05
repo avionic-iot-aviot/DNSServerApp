@@ -4,6 +4,7 @@ module.exports = {
         envFilename: `.env.production`
     },
     arp: {
-        interface: 'edge0'
+        interface: 'edge0',
+        entry_interface: 'iface'
     }     
 };

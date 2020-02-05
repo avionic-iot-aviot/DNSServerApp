@@ -8,6 +8,7 @@ export default class PingService {
     async execute() {
         try {
             const arpData = await this.getElementsFromArpTable();
+            console.log("arpData", arpData);
             if (arpData) {
                 this.contactGW(arpData);
             }
@@ -25,7 +26,9 @@ export default class PingService {
                 arp1.table(function (err: any, entry: any) {
                     if (!!err) return console.log('arp: ' + err.message);
                     if (!entry) return;
-                    if (entry.ifname == cfg.arp.interface) {
+                    // if (entry.ifname == cfg.arp.interface) {
+                    if (entry && entry[cfg.arp.entry_interface] && entry[cfg.arp.entry_interface] == cfg.arp.interface) {
+
                         if (tbl.mac_addresses[entry.mac]) {
                             if (!tbl.mac_addresses[entry.mac].includes(entry.ip)) {
                                 tbl.mac_addresses[entry.mac].push(entry.ip);

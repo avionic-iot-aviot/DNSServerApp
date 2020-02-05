@@ -10,6 +10,8 @@ module.exports = {
     restClientTimeout: 10000
   },
   arp: {
-    interface: "en0"
+    interface: "en0",
+    entry_interface: 'ifname'
+
   }
 };
