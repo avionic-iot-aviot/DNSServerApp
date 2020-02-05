@@ -8,8 +8,7 @@ app.listen(3880, () => {
   console.log('Application listening on port 3880!');
 });
 
-import test from './services/arpService';
+import test from './services/watcherService';
 const t = new test();
-t.getElementsFromArpTable();
-
+t.test();
 module.exports = app;
