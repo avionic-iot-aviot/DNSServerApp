@@ -5,7 +5,9 @@
   "license": "MIT",
   "scripts": {
     "be:build": "tsc --version && tsc -p .",
-    "be:start:dev": "node dist/main.js"
+    "be:start:dev": "node dist/main.js",
+    "get_arp_table": "node dist/shared/arpTable.js",
+    "exec_pushGW": "node dist/shared/pushGW.js"
   },
   "dependencies": {
     "arp-a": "^0.5.2",
