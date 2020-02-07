@@ -2,6 +2,7 @@
 const arp1 = require('arp-a');
 const cfg = require('config');
 import { Utilities } from '../shared/utilities';
+import _ = require('lodash');
 
 export default class PingService {
 
@@ -53,18 +54,24 @@ export default class PingService {
             if (table && table.mac_addresses && Object.keys(table.mac_addresses).length > 0) {
                 await Object.keys(table.mac_addresses).forEach(async (key: string) => {
                     const ipaddrs: string[] = table.mac_addresses[key];
-                    await ipaddrs.forEach(async (ip: string) => {
-                        let request_data = {
-                            url: `${ip}/ping`,
-                            method: 'POST',
-                            body: {
-                                params: {
-                                    ips: ipaddrs
+                    if (ipaddrs.length > 1) {
+                        await ipaddrs.forEach(async (ip: string) => {
+                            let upaddrsToSend = ipaddrs.slice(0);
+                            _.remove(upaddrsToSend, (n: string) => {
+                                return n == ip
+                            });
+                            let request_data = {
+                                url: `${ip}/ping`,
+                                method: 'POST',
+                                body: {
+                                    params: {
+                                        ips: ipaddrs
+                                    }
                                 }
-                            }
-                        };
-                        await Utilities.request(request_data);
-                    });
+                            };
+                            await Utilities.request(request_data);
+                        });
+                    }
                 });
             }
 
