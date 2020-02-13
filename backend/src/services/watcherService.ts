@@ -6,6 +6,7 @@ const fs = require('fs');
 export default class WatcherService {
 
     test() {
+
         let tmpDirectory = path.join(__dirname, 'backend/src/', 'test.txt');
 
         fs.watchFile(tmpDirectory, (curr: any, prev: any) => {
@@ -23,7 +24,7 @@ export default class WatcherService {
             );
             let tmpDirectory = path.join(__dirname, 'backend/src/', targetFile);
             var watcher = chokidar.watch(tmpDirectory, { persistent: true });
-            
+
             console.log("targetFile", tmpDirectory);
 
             watcher.on('change', async (filePath: string) => {
