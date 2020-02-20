@@ -3,8 +3,9 @@ import { IResultRequest } from "../interfaces/interfaces";
 const request = require('request');
 
 export class Utilities {
-
-    static request(request_data: any) : any {
+    // metodo che prende in ingresso le configurazioni relative ad una richiesta (url, method, etc)
+    // e procede ad effettuare la richiesta stessa
+    static request(request_data: any): any {
 
         const result: IResultRequest = {
             success: false,

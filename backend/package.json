@@ -8,7 +8,7 @@
     "be:start:dev": "node dist/main.js",
     "get_arp_table": "node dist/shared/arpTable.js",
     "exec_pushGW": "node dist/shared/pushGW.js",
-    "test": "node dist/shared/test.js"
+    "test": "node dist/shared/watcher.js"
   },
   "dependencies": {
     "arp-a": "^0.5.2",

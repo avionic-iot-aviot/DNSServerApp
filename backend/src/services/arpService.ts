@@ -18,8 +18,10 @@ export default class PingService {
         }
     }
 
+    // il metodo scansiona la tabella degli ARP
+    // seleziona le righe relative all'interfaccia indicata nel file di configurazione
+    // ritorna una mappa contenente MAC addresses e IPs
     async getElementsFromArpTable() {
-
         try {
             const promise = new Promise((resolve, reject) => {
                 let tbl: any = { mac_addresses: {} };
@@ -42,13 +44,15 @@ export default class PingService {
 
                 });
             });
-
             return promise;
         } catch (error) {
             console.log("ERRR", error);
         }
     }
 
+    // data la mappa contenenet tutti gli IP raggruppati per MAC Address
+    // si proverà a fare una richiesta su ogni IP, al fine di inviare all'indirizzo del GW
+    // che sta in ascolto tutti gli IP che afferiscono allo stesso MAC address
     async contactGW(table: any) {
         try {
             if (table && table.mac_addresses && Object.keys(table.mac_addresses).length > 0) {
@@ -74,10 +78,8 @@ export default class PingService {
                     }
                 });
             }
-
         } catch (error) {
             console.log("ERROR contact GW", error);
         }
-
     }
 }
