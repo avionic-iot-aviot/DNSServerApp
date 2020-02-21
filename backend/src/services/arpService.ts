@@ -65,13 +65,14 @@ export default class PingService {
                                 return n == ip
                             });
                             let request_data = {
-                                url: `${ip}/ping`,
+                                url: `http://${ip}:3800/ping`,
                                 method: 'POST',
                                 body: {
                                     params: {
-                                        ips: ipaddrs
+                                        ips: upaddrsToSend
                                     }
-                                }
+                                },
+                                json: true
                             };
                             await Utilities.request(request_data);
                         });
