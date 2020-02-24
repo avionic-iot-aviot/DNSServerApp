@@ -47,7 +47,6 @@ export default class PingService {
 
     async compareOldAndNewObject(newObject: any) {
         let areEqual = false;
-        const newObjectStringified = JSON.stringify(newObject);
         const oldObjectStringified = await this.getObjectFromFile();
         if (oldObjectStringified) {
             // equal = Object.is(newObjectStringified, oldObjectStringified)
