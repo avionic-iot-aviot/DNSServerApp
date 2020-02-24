@@ -1,6 +1,8 @@
 
 const arp1 = require('arp-a');
 const cfg = require('config');
+const equal = require('deep-equal');
+const fs = require('fs');
 import { Utilities } from '../shared/utilities';
 import _ = require('lodash');
 
@@ -11,11 +13,48 @@ export default class PingService {
             const arpData = await this.getElementsFromArpTable();
             console.log("arpData", arpData);
             if (arpData) {
-                this.contactGW(arpData);
+                const comparation = this.compareOldAndNewObject(arpData);
+                console.log("comparation", comparation);
+                this.saveObjectInFile(JSON.stringify(arpData));
+                if (!comparation) {
+                    this.contactGW(arpData);
+                }
             }
         } catch (error) {
             console.log("error", error);
         }
+    }
+
+    saveObjectInFile(content: string) {
+        fs.writeFile("arp_object", content, function (err: any) {
+            if (err) console.log(err);
+            else console.log("file saved");
+        });
+    }
+
+    async getObjectFromFile() {
+        try {
+            if (fs.existsSync("arp_object")) {
+                const content = await fs.readFileSync("arp_object", 'utf8');
+                console.log("content", content);
+                return content;
+            }
+
+        } catch (error) {
+            console.log("ERRR", error);
+        }
+    }
+
+    async compareOldAndNewObject(newObject: any) {
+        let areEqual = false;
+        const newObjectStringified = JSON.stringify(newObject);
+        const oldObjectStringified = await this.getObjectFromFile();
+        if (oldObjectStringified) {
+            // equal = Object.is(newObjectStringified, oldObjectStringified)
+            const oldObject = JSON.parse(oldObjectStringified);
+            areEqual = equal(newObject, oldObject);
+        }
+        return areEqual;
     }
 
     // il metodo scansiona la tabella degli ARP
