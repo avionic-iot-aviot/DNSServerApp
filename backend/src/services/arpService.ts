@@ -49,6 +49,9 @@ export default class PingService {
         let areEqual = false;
         const oldObjectStringified = await this.getObjectFromFile();
         if (oldObjectStringified) {
+            console.log("oldObjectStringified", oldObjectStringified);
+            console.log("newObjectStringified", JSON.stringify(newObject));
+
             // equal = Object.is(newObjectStringified, oldObjectStringified)
             const oldObject = JSON.parse(oldObjectStringified);
             areEqual = equal(newObject, oldObject);
