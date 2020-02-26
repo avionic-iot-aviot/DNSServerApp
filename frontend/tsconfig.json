@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+      "target": "es5",
+      "module": "commonjs",
+      "jsx": "react",
+      "sourceMap": true,
+      "outDir": "./dist",
+      "strict": true,
+      "esModuleInterop": true,
+      "forceConsistentCasingInFileNames": true,
+      "lib": [
+        "es2017",
+        "dom"
+      ]
+    }
+  }
