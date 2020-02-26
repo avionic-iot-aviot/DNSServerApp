@@ -8,16 +8,24 @@
     "watch": "webpack --display-error-details --display-reasons --colors --watch"
   },
   "dependencies": {
+    "axios": "^0.19.2",
+    "bluebird": "^3.7.2",
     "history": "^4.10.1",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
+    "semantic-ui-react": "^0.88.2",
     "ts-loader": "^6.2.1",
     "typescript": "^3.8.2",
     "webpack": "^4.41.6"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/bluebird": "^3.5.29",
     "@types/history": "^4.7.5",
+    "@types/lodash": "^4.14.149",
     "@types/react": "^16.9.23",
     "@types/react-dom": "^16.9.5",
     "@types/react-router-dom": "^5.1.3",

@@ -5,13 +5,17 @@ const path = require('path');
 const app = express();
 app.use(bodyParser.json());
 
+
+const pubApiDNSRoute = require('./routes/public/dnsRoutes');
+
+app.use('/dns', pubApiDNSRoute);
+
+
+
 const frontendPublic = path.join(__dirname, '../../frontend/public');
 const frontendDist = path.join(__dirname, '../../frontend/dist');
 app.use('/public', express.static(frontendPublic));
 app.use('/dist', express.static(frontendDist));
-
-
-
 app.get('*', (req, res, next) => {
   res.sendFile(path.join(frontendPublic, '/index.html'));
 });
