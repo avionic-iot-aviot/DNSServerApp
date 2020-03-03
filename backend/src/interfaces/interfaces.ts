@@ -1,3 +1,10 @@
+export interface IDataResponse {
+    status: 'success' | 'error';
+    payload: {};
+    error: any;
+    message: string;
+}
+
 export interface IDeviceRegistration {
     id?: number;
     mac_address?: string;

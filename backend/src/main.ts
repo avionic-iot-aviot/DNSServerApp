@@ -8,7 +8,12 @@ app.use(bodyParser.json());
 
 const pubApiDNSRoute = require('./routes/public/dnsRoutes');
 
+
 app.use('/dns', pubApiDNSRoute);
+
+
+const prvApiTenantRoute = require('./routes/private/tenantRoutes');
+app.use('/private/tenant', prvApiTenantRoute);
 
 
 

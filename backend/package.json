@@ -5,7 +5,9 @@
   "license": "MIT",
   "scripts": {
     "be:build": "tsc --version && tsc -p .",
-    "be:start:dev": "node dist/main.js",
+    "be:start:dev": " cross-env NODE_ENV=development node dist/main.js",
+    "be:start:staging": " cross-env NODE_ENV=staging node dist/main.js",
+    "be:start:production": " cross-env NODE_ENV=production node dist/main.js",
     "get_arp_table": "node dist/shared/arpTable.js",
     "exec_pushGW": "node dist/shared/pushGW.js",
     "test": "node dist/shared/watcher.js"
@@ -14,10 +16,11 @@
     "arp-a": "^0.5.2",
     "body-parser": "^1.19.0",
     "config": "^3.2.5",
-    "cross-env": "^6.0.3",
+    "cross-env": "^5.2.0",
     "deep-equal": "^2.0.1",
     "express": "^4.17.1",
     "fs": "^0.0.1-security",
+    "http-status-code": "^2.1.0",
     "http-status-codes": "^1.4.0",
     "knex": "^0.20.10",
     "lodash": "^4.17.15",
