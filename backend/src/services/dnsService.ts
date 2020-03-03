@@ -11,6 +11,9 @@ const tenantStore = new TenantStore();
 
 export default class DNSService {
 
+    // il metodo aggiunge nella tabella devices tutti i nuovi MAC_address presenti nel file delle leases
+    // e crea il file host che servirà a dnsmasq per poter risolvere gli hostname dei GW e degli hosts 
+    // collegati al GW
     async searchAndSaveNewLeases() {
         try {
             let prepareFileHost = "";
@@ -49,6 +52,8 @@ export default class DNSService {
         }
     }
 
+    // il metodo legge il file relativo alle leases (es. dnsmasq.leases) e ritorna un array di oggetti
+    // dove ogni oggetto ha come keys: mac, ip, host, timestamp
     getCurrentLeases() {
         try {
             let tmpDirectoryLeases = cfg.watcher && cfg.watcher.leases_path ? cfg.watcher.leases_path : path.join(__dirname, '../../src/leases');
