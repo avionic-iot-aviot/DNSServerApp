@@ -5,6 +5,7 @@ import { Grid, Input, Button, Container, Segment, Card, Image, Form } from 'sema
 import { history } from '../../main';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
+import DNSApi from './../../api/dnsApi';
 
 // interface CompProps {
 // }
@@ -24,7 +25,7 @@ import { Link } from 'react-router-dom';
 
 const DNSForm = () => {
     const [mac_address, setMacAddress] = useState('test');
-    const [ip, setIP] = useState('IPPP');
+    const [name, setName] = useState('name');
     // const [form, setState] = useState({
     //     ip: '',
     //     mac_address: ''
@@ -51,8 +52,16 @@ const DNSForm = () => {
 
     // render() {
 
-    function submit() {
-
+    async function submit() {
+        try {
+            const responseInsertion = await DNSApi.addElement({
+                mac_address,
+                name
+            });
+            console.log("CREATED???", responseInsertion);
+        } catch (error) {
+            console.log("ERROR", error);
+        }
     }
 
     function handleChange(event: any) {
@@ -85,17 +94,21 @@ const DNSForm = () => {
                         </Grid.Row>
                         <Grid.Row width={16}>
                             <Input
-                                placeholder="ip"
-                                name="IP"
+                                placeholder="name"
+                                name="Name"
                                 type="text"
-                                value={ip}
+                                value={name}
                                 onChange={(event: any) => {
                                     handleChange(event);
                                 }}
                             />
                         </Grid.Row>
 
-                        <Button type='submit'>Submit</Button>
+                        <Button type='submit'
+                            onClick={(event: any) => {
+                                submit();
+                            }}
+                        >Submit</Button>
 
                     </Grid>
 

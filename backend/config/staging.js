@@ -8,6 +8,8 @@ module.exports = {
     entry_interface: "iface"
   },
   watcher: {
-    path_to_watch: "/proc/net/arp"
-  }
+    path_to_watch: "/proc/net/arp",
+    leases_path: "/var/lib/misc/dnsmasq.leases"
+  },
+  path_file_host: ""
 };

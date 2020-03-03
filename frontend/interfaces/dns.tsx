@@ -1,4 +1,4 @@
 export interface IDNS {
-    ip?: string;
+    name?: string;
     mac_address?: string;
 }

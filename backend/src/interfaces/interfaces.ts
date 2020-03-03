@@ -5,10 +5,18 @@ export interface IDataResponse {
     message: string;
 }
 
-export interface IDeviceRegistration {
+export interface ILease {
+    host: string;
+    ip: string;
+    mac: string;
+    timestamp: string;
+}
+
+export interface IDevice {
     id?: number;
+    dns_name_auto?: string;
+    dns_name_manual?: string;
     mac_address?: string;
-    name?: string;
     tenant_id: number;
     updated_at?: string;
 }
@@ -21,6 +29,7 @@ export interface IResultRequest {
 
 export interface ITenant {
     id?: number;
-    name?: string;
+    description?: string;
+    edge_interface_name?: string;
     updated_at?: string;
 }

@@ -7,7 +7,7 @@ const knex = require('knex')(config[process.env.NODE_ENV]);
 export default class TenantStore {
     constructor() { }
 
-    create(tenant: TenantStore) {
+    create(tenant: ITenant) {
         return knex('tenants').insert(tenant);
     }
 
