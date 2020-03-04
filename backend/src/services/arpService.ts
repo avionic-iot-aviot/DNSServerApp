@@ -15,7 +15,7 @@ export default class PingService {
             if (arpData) {
                 const comparation = this.compareOldAndNewObject(arpData);
                 console.log("comparation", comparation);
-                this.saveObjectInFile(JSON.stringify(arpData));
+                Utilities.writeFile(cfg.arp.check_file, JSON.stringify(arpData));
                 if (!comparation) {
                     this.contactGW(arpData);
                 }
@@ -25,17 +25,10 @@ export default class PingService {
         }
     }
 
-    saveObjectInFile(content: string) {
-        fs.writeFile("arp_object", content, function (err: any) {
-            if (err) console.log(err);
-            else console.log("file saved");
-        });
-    }
-
     async getObjectFromFile() {
         try {
-            if (fs.existsSync("arp_object")) {
-                const content = await fs.readFileSync("arp_object", 'utf8');
+            if (fs.existsSync(cfg.arp.check_file)) {
+                const content = await fs.readFileSync(cfg.arp.check_file, 'utf8');
                 console.log("content", content);
                 return content;
             }

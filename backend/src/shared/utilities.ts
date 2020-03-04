@@ -1,5 +1,5 @@
 import { IResultRequest } from "../interfaces/interfaces";
-
+const fs = require('fs');
 const request = require('request');
 
 export class Utilities {
@@ -30,6 +30,13 @@ export class Utilities {
                     resolve(result);
                 }
             );
+        });
+    }
+
+    static writeFile(filename: string, content: string) {
+        fs.writeFile(filename, content, function (err: any) {
+            if (err) console.log(err);
+            else console.log("file saved");
         });
     }
 }

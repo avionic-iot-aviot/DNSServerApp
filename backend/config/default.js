@@ -11,7 +11,8 @@ module.exports = {
   },
   arp: {
     interface: "en0",
-    entry_interface: "ifname"
+    entry_interface: "ifname",
+    check_file: "arp_object"
   },
   default_tenant: 'edge0',
 };

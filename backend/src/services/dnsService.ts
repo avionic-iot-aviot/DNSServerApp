@@ -6,6 +6,7 @@ const leases = require('dnsmasq-leases');
 const path = require('path');
 import DeviceStore from '../store/deviceStore';
 import TenantStore from '../store/tenantStore';
+import { Utilities } from '../shared/utilities';
 const deviceStore = new DeviceStore();
 const tenantStore = new TenantStore();
 
@@ -46,7 +47,7 @@ export default class DNSService {
             }
             console.log("ContentFileHost", prepareFileHost);
             let pathFileHost = cfg.path_file_host ? cfg.path_file_host : "myhostfile";
-            this.writeFileHost(pathFileHost, prepareFileHost);
+            Utilities.writeFile(pathFileHost, prepareFileHost);
         } catch (error) {
             console.log("ERROR", error);
         }
