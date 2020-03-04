@@ -5,6 +5,9 @@ const equal = require('deep-equal');
 const fs = require('fs');
 import { Utilities } from '../shared/utilities';
 import _ = require('lodash');
+import TenantStore from '../store/tenantStore';
+const tenantStore = new TenantStore();
+import { ITenant } from '../interfaces/interfaces';
 
 export default class PingService {
 
@@ -13,7 +16,7 @@ export default class PingService {
             const arpData = await this.getElementsFromArpTable();
             console.log("arpData", arpData);
             if (arpData) {
-                const comparation = this.compareOldAndNewObject(arpData);
+                const comparation = await this.compareOldAndNewObject(arpData);
                 console.log("comparation", comparation);
                 Utilities.writeFile(cfg.arp.check_file, JSON.stringify(arpData));
                 if (!comparation) {
@@ -53,32 +56,36 @@ export default class PingService {
     }
 
     // il metodo scansiona la tabella degli ARP
-    // seleziona le righe relative all'interfaccia indicata nel file di configurazione
-    // ritorna una mappa contenente MAC addresses e IPs
+    // seleziona le righe relative alle interfacce relative ai vari tenants
+    // ritorna una mappa contenente interfaces, MAC addresses e IPs
     async getElementsFromArpTable() {
         try {
-            const promise = new Promise((resolve, reject) => {
-                let tbl: any = { mac_addresses: {} };
+            const tenants = await tenantStore.findAll();
+            if (tenants) {
+                // const tenantInterfaces = tenants.map((val: ITenant) => val.edge_interface_name);
+                const tenantInterfaces: string[] = [cfg.arp.interface];
+                const promise = new Promise((resolve, reject) => {
+                    let tbl: any = {};
 
-                arp1.table(function (err: any, entry: any) {
-                    if (!!err) return console.log('arp: ' + err.message);
-                    if (!entry) return;
-                    // if (entry.ifname == cfg.arp.interface) {
-                    if (entry && entry[cfg.arp.entry_interface] && entry[cfg.arp.entry_interface] == cfg.arp.interface) {
+                    arp1.table(function (err: any, entry: any) {
+                        if (!!err) return console.log('arp: ' + err.message);
+                        if (!entry) return;
+                        // console.log("(entry[cfg.arp.entry_interface]", (entry[cfg.arp.entry_interface]);
 
-                        if (tbl.mac_addresses[entry.mac]) {
-                            if (!tbl.mac_addresses[entry.mac].includes(entry.ip)) {
-                                tbl.mac_addresses[entry.mac].push(entry.ip);
+                        if (entry && entry[cfg.arp.entry_interface] && tenantInterfaces.includes(entry[cfg.arp.entry_interface])) {
+                            if (!tbl[entry[cfg.arp.entry_interface]]) tbl[entry[cfg.arp.entry_interface]] = { mac_addresses: {} };
+                            if (tbl[entry[cfg.arp.entry_interface]].mac_addresses[entry.mac]) {
+                                tbl[entry[cfg.arp.entry_interface]].mac_addresses[entry.mac].push(entry.ip);
+                            } else {
+                                tbl[entry[cfg.arp.entry_interface]].mac_addresses[entry.mac] = [entry.ip];
                             }
-                        } else {
-                            tbl.mac_addresses[entry.mac] = [entry.ip];
                         }
-                    }
-                    resolve(tbl);
+                        resolve(tbl);
 
+                    });
                 });
-            });
-            return promise;
+                return promise;
+            }
         } catch (error) {
             console.log("ERRR", error);
         }
@@ -89,26 +96,31 @@ export default class PingService {
     // che sta in ascolto tutti gli IP che afferiscono allo stesso MAC address
     async contactGW(table: any) {
         try {
-            if (table && table.mac_addresses && Object.keys(table.mac_addresses).length > 0) {
-                await Object.keys(table.mac_addresses).forEach(async (key: string) => {
-                    const ipaddrs: string[] = table.mac_addresses[key];
-                    if (ipaddrs.length > 1) {
-                        await ipaddrs.forEach(async (ip: string) => {
-                            let upaddrsToSend = ipaddrs.slice(0);
-                            _.remove(upaddrsToSend, (n: string) => {
-                                return n == ip
-                            });
-                            let request_data = {
-                                url: `http://${ip}:3800/ping`,
-                                method: 'POST',
-                                body: {
-                                    params: {
-                                        ips: upaddrsToSend
-                                    }
-                                },
-                                json: true
-                            };
-                            await Utilities.request(request_data);
+            if (table) {
+                await Object.keys(table).forEach(async (interfaceKey: string) => {
+                    const mac_addresses = table[interfaceKey].mac_addresses;
+                    if (mac_addresses && Object.keys(mac_addresses).length > 0) {
+                        await Object.keys(mac_addresses).forEach(async (key: string) => {
+                            const ipaddrs: string[] = mac_addresses[key];
+                            if (ipaddrs.length > 1) {
+                                await ipaddrs.forEach(async (ip: string) => {
+                                    let upaddrsToSend = ipaddrs.slice(0);
+                                    _.remove(upaddrsToSend, (n: string) => {
+                                        return n == ip
+                                    });
+                                    let request_data = {
+                                        url: `http://${ip}:3800/ping`,
+                                        method: 'POST',
+                                        body: {
+                                            params: {
+                                                ips: upaddrsToSend
+                                            }
+                                        },
+                                        json: true
+                                    };
+                                    await Utilities.request(request_data);
+                                });
+                            }
                         });
                     }
                 });

@@ -4,6 +4,7 @@ backend/yarn-error.log
 backend/src/test.txt
 backend/src/leases
 backend/myhostfile
+backend/arp_object
 frontend/node_modules
 frontend/dist
 frontend/yarn-error.log
