@@ -6,6 +6,7 @@ exports.up = async function(knex) {
     table.string("dns_name_manual");
     table.text("description");
     table.boolean("is_gw");
+    table.integer("gw_id");
     
     table.timestamps(true, true);
   });

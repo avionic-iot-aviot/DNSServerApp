@@ -7,7 +7,11 @@ import { Utilities } from '../shared/utilities';
 import _ = require('lodash');
 import TenantStore from '../store/tenantStore';
 const tenantStore = new TenantStore();
-import { ITenant } from '../interfaces/interfaces';
+import { ITenant, ILease, IDevice } from '../interfaces/interfaces';
+import DNSService from './dnsService';
+const dnsService = new DNSService();
+import DeviceStore from '../store/deviceStore';
+const deviceStore = new DeviceStore();
 
 export default class PingService {
 
@@ -20,11 +24,86 @@ export default class PingService {
                 console.log("comparation", comparation);
                 Utilities.writeFile(cfg.arp.check_file, JSON.stringify(arpData));
                 if (!comparation) {
-                    this.contactGW(arpData);
+                    const contactedGW = this.contactGW(arpData);
+                    if (contactedGW) {
+                        const gwMacs = Object.keys(contactedGW);
+                        this.addInfoGWAndTenantToDevices(arpData, gwMacs);
+                    }
                 }
             }
         } catch (error) {
             console.log("error", error);
+        }
+    }
+
+
+    async addInfoGWAndTenantToDevices(arpData: any, gwMacs: string[]) {
+        const leases = dnsService.getCurrentLeases();
+        if (arpData) {
+            await Object.keys(arpData).forEach(async (interfaceKey: string) => {
+                const mac_addresses = arpData[interfaceKey].mac_addresses;
+                if (mac_addresses && Object.keys(mac_addresses).length > 0) {
+                    let tenantRes = await tenantStore.findBy({ edge_interface_name: interfaceKey });
+                    if (tenantRes && tenantRes.length == 1) {
+                        const tenant = tenantRes[0];
+                        let currentGWId: number = null;
+                        await Object.keys(mac_addresses).forEach(async (key: string) => {
+                            if (gwMacs.includes(key)) {
+                                let gwInterface: IDevice = {
+                                    mac_address: key,
+                                    tenant_id: tenant.id
+                                };
+                                const gwRes = await deviceStore.findBy(gwInterface);
+                                gwInterface.is_gw = true;
+                                if (gwRes && gwRes.length == 1) {
+                                    gwInterface.id = gwRes[0].id;
+                                    // verificare result update
+                                    const updateRes = await deviceStore.update(gwInterface);
+                                    if (updateRes) {
+                                        currentGWId = updateRes[0];
+                                    }
+                                    // currentGW = gwRes[0];
+                                } else {
+                                    // verificare result create
+                                    const createRes = await deviceStore.create(gwInterface);
+                                    if (createRes) {
+                                        currentGWId = createRes[0];
+                                    }
+                                }
+                            }
+                            // ELSE
+                            const ipaddrs: string[] = mac_addresses[key];
+                            // if (ipaddrs.length > 1) {
+                            await ipaddrs.forEach(async (ip: string) => {
+                                const currentLeases = leases.filter((val: ILease) => val.ip == ip);
+                                if (currentLeases && currentLeases.length == 1) {
+                                    const currentLease: ILease = currentLeases[0];
+                                    let device: IDevice = {
+                                        mac_address: currentLease.mac,
+                                        tenant_id: tenant.id
+                                    };
+                                    device.gw_id = currentGWId;
+                                    if (currentLease.mac == key && gwMacs.includes(currentLease.mac)) {
+                                        //is GW
+                                        device.is_gw = true;
+                                    } else {
+                                        // not is GW
+                                        device.is_gw = false;
+                                    }
+                                    const deviceRes = await deviceStore.findBy(device);
+                                    if (deviceRes && deviceRes.length == 1) {
+                                        device.id = deviceRes[0].id;
+                                        await deviceStore.update(device);
+                                    } else {
+                                        await deviceStore.create(device);
+                                    }
+                                }
+                            });
+                            // }
+                        });
+                    }
+                }
+            });
         }
     }
 
@@ -96,35 +175,40 @@ export default class PingService {
     // che sta in ascolto tutti gli IP che afferiscono allo stesso MAC address
     async contactGW(table: any) {
         try {
+            let contacted: any = {};
             if (table) {
                 await Object.keys(table).forEach(async (interfaceKey: string) => {
                     const mac_addresses = table[interfaceKey].mac_addresses;
                     if (mac_addresses && Object.keys(mac_addresses).length > 0) {
                         await Object.keys(mac_addresses).forEach(async (key: string) => {
                             const ipaddrs: string[] = mac_addresses[key];
-                            if (ipaddrs.length > 1) {
-                                await ipaddrs.forEach(async (ip: string) => {
-                                    let upaddrsToSend = ipaddrs.slice(0);
-                                    _.remove(upaddrsToSend, (n: string) => {
-                                        return n == ip
-                                    });
-                                    let request_data = {
-                                        url: `http://${ip}:3800/ping`,
-                                        method: 'POST',
-                                        body: {
-                                            params: {
-                                                ips: upaddrsToSend
-                                            }
-                                        },
-                                        json: true
-                                    };
-                                    await Utilities.request(request_data);
+                            // if (ipaddrs.length > 1) {
+                            await ipaddrs.forEach(async (ip: string) => {
+                                let upaddrsToSend = ipaddrs.slice(0);
+                                _.remove(upaddrsToSend, (n: string) => {
+                                    return n == ip
                                 });
-                            }
+                                let request_data = {
+                                    url: `http://${ip}:3800/ping`,
+                                    method: 'POST',
+                                    body: {
+                                        params: {
+                                            ips: upaddrsToSend
+                                        }
+                                    },
+                                    json: true
+                                };
+                                const requestRes = await Utilities.request(request_data);
+                                if (requestRes && requestRes.success) {
+                                    contacted[key] = ip;
+                                }
+                            });
+                            // }
                         });
                     }
                 });
             }
+            return contacted;
         } catch (error) {
             console.log("ERROR contact GW", error);
         }
