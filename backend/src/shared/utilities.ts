@@ -12,12 +12,6 @@ export class Utilities {
             body: null,
             error: null
         };
-        // let request_data = {
-        //     url: cfg.provider.requestTokenGarmin,
-        //     method: 'POST',
-        // }
-        // const headers = {};
-        // request_data.headers = headers;
         return new Promise((resolve, reject) => {
             request(
                 request_data,
@@ -32,7 +26,9 @@ export class Utilities {
             );
         });
     }
-
+    // metodo che permette di scrivere un file
+    // filename = path del file
+    // content = contenuto da scrivere nel file
     static writeFile(filename: string, content: string) {
         fs.writeFile(filename, content, function (err: any) {
             if (err) console.log(err);
