@@ -69,11 +69,4 @@ export default class DNSService {
             return null;
         }
     }
-
-    writeFileHost(filename: string, content: string) {
-        fs.writeFile(filename, content, function (err: any) {
-            if (err) console.log(err);
-            else console.log("file saved");
-        });
-    }
 }
