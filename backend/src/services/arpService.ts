@@ -26,7 +26,7 @@ export default class PingService {
                 if (!comparation) {
                     const contactedGW = this.contactGW(arpData);
                     if (contactedGW) {
-                        const gwMacs = Object.keys(contactedGW);
+                        const gwMacs = contactedGW;
                         this.addInfoGWAndTenantToDevices(arpData, gwMacs);
                     }
                 }
@@ -36,8 +36,8 @@ export default class PingService {
         }
     }
 
-
-    async addInfoGWAndTenantToDevices(arpData: any, gwMacs: string[]) {
+    async addInfoGWAndTenantToDevices(arpData: any, contactedGW: any) {
+        const gwMacs = Object.keys(contactedGW);
         const leases = dnsService.getCurrentLeases();
         if (arpData) {
             await Object.keys(arpData).forEach(async (interfaceKey: string) => {
@@ -70,36 +70,31 @@ export default class PingService {
                                         currentGWId = createRes[0];
                                     }
                                 }
+                                // }
+                                // ELSE??? no
+                                const ipaddrs: string[] = mac_addresses[key];
+                                await ipaddrs.forEach(async (ip: string) => {
+                                    if (ip != contactedGW[key]) {
+                                        const currentLeases = leases.filter((val: ILease) => val.ip == ip);
+                                        if (currentLeases && currentLeases.length == 1) {
+                                            const currentLease: ILease = currentLeases[0];
+                                            let device: IDevice = {
+                                                mac_address: currentLease.mac,
+                                                tenant_id: tenant.id
+                                            };
+                                            const deviceRes = await deviceStore.findBy(device);
+                                            device.is_gw = false;
+                                            device.gw_id = currentGWId;
+                                            if (deviceRes && deviceRes.length == 1) {
+                                                device.id = deviceRes[0].id;
+                                                await deviceStore.update(device);
+                                            } else {
+                                                await deviceStore.create(device);
+                                            }
+                                        }
+                                    }
+                                });
                             }
-                            // ELSE
-                            const ipaddrs: string[] = mac_addresses[key];
-                            // if (ipaddrs.length > 1) {
-                            await ipaddrs.forEach(async (ip: string) => {
-                                const currentLeases = leases.filter((val: ILease) => val.ip == ip);
-                                if (currentLeases && currentLeases.length == 1) {
-                                    const currentLease: ILease = currentLeases[0];
-                                    let device: IDevice = {
-                                        mac_address: currentLease.mac,
-                                        tenant_id: tenant.id
-                                    };
-                                    device.gw_id = currentGWId;
-                                    if (currentLease.mac == key && gwMacs.includes(currentLease.mac)) {
-                                        //is GW
-                                        device.is_gw = true;
-                                    } else {
-                                        // not is GW
-                                        device.is_gw = false;
-                                    }
-                                    const deviceRes = await deviceStore.findBy(device);
-                                    if (deviceRes && deviceRes.length == 1) {
-                                        device.id = deviceRes[0].id;
-                                        await deviceStore.update(device);
-                                    } else {
-                                        await deviceStore.create(device);
-                                    }
-                                }
-                            });
-                            // }
                         });
                     }
                 }
