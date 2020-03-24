@@ -4,7 +4,7 @@ const _ = require('lodash');
 const router = express.Router();
 import * as HttpStatus from 'http-status-codes';
 import DNSService from '../../services/dnsService';
-import DeviceRegistrationStore from '../../store/deviceStore';
+import DeviceRegistrationStore from '../../stores/deviceStore';
 const dnsService = new DNSService();
 const deviceRegistrationStore = new DeviceRegistrationStore();
 

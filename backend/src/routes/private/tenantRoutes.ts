@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as HttpStatus from 'http-status-codes';
-import TenantStore from '../../store/tenantStore';
+import TenantStore from '../../stores/tenantStore';
 
 import { ITenant } from '../../interfaces/interfaces';
 const _ = require('lodash');

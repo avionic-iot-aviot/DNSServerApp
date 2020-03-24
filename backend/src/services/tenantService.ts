@@ -4,7 +4,7 @@ const cfg = require('config');
 const fs = require('fs');
 const leases = require('dnsmasq-leases');
 const path = require('path');
-import TenantStore from '../store/tenantStore';
+import TenantStore from '../stores/tenantStore';
 const tenantStore = new TenantStore();
 
 export default class TenantService {

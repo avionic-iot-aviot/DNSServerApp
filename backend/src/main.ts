@@ -5,16 +5,21 @@ const path = require('path');
 const app = express();
 app.use(bodyParser.json());
 
+const passport = require('passport');
+
+require('./passport').setupStrategies(passport);
 
 const pubApiDNSRoute = require('./routes/public/dnsRoutes');
-
+const pubApiUserRoutes = require('./routes/public/userRoutes')(passport);
 
 app.use('/dns', pubApiDNSRoute);
-
+app.use('/user', pubApiUserRoutes);
 
 const prvApiTenantRoute = require('./routes/private/tenantRoutes');
 app.use('/private/tenant', prvApiTenantRoute);
+const prtApiUserRoutes = require('./routes/private/userRoutes');
 
+app.use('/api/private/user', prtApiUserRoutes);
 
 
 const frontendPublic = path.join(__dirname, '../../frontend/public');
