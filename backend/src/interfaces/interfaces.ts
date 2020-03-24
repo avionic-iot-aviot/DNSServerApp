@@ -29,9 +29,23 @@ export interface IResultRequest {
     success: boolean;
 }
 
+export interface IRole {
+    id?: number;
+    name?: string;
+}
+
 export interface ITenant {
     id?: number;
     description?: string;
     edge_interface_name?: string;
+    updated_at?: string;
+}
+
+export interface IUser {
+    id?: number;
+    email?: string;
+    password?: string;
+    role_id?: number;
+    created_at?: string;
     updated_at?: string;
 }
