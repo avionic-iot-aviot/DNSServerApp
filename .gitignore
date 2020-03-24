@@ -3,6 +3,7 @@ backend/dist
 backend/yarn-error.log
 backend/src/test.txt
 backend/src/leases
+*.sqlite3
 backend/myhostfile
 backend/arp_object
 frontend/node_modules

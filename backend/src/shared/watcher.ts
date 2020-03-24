@@ -9,6 +9,8 @@ console.log("dirr", tmpDirectory);
 if (cfg.watcher && cfg.watcher.path_to_watch) {
     tmpDirectory = cfg.watcher.path_to_watch;
 }
+console.log("tmpDirectory", tmpDirectory);
+
 fs.watchFile(tmpDirectory, (curr: any, prev: any) => {
     console.log("QUI");
     console.log(
@@ -21,6 +23,7 @@ let tmpDirectoryLeases = path.join(__dirname, '../../src/leases');
 if (cfg.watcher && cfg.watcher.leases_path) {
     tmpDirectoryLeases = cfg.watcher.leases_path;
 }
+console.log("tmpDirectoryLeases", tmpDirectoryLeases);
 fs.watchFile(tmpDirectoryLeases, (curr: any, prev: any) => {
     console.log(
         `[${new Date().toLocaleString()}] Watching for file changes on: ${tmpDirectory}`

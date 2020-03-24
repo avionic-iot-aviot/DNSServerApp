@@ -21,6 +21,7 @@ npm install npm@latest -g
 node -v
 npm install -g typescript
 npm install pm2 -g
+npm install -g knex
 # cd ../
 #sudo wget https://www.kernel.org/pub/linux/utils/net/bridge-utils/bridge-utils-1.6.tar.xz
 #tar -xzf bridge-utils-1.6.tar.xz.tar.gz
