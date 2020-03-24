@@ -17,9 +17,10 @@ sudo wget http://www.thekelleys.org.uk/dnsmasq/dnsmasq-2.80.tar.gz
 tar -xf dnsmasq-2.80.tar.gz
 cd dnsmasq-2.80/
 make
-sudo npm install npm@latest -g
+npm install npm@latest -g
 node -v
-sudo npm install -g typescript
+npm install -g typescript
+npm install pm2 -g
 # cd ../
 #sudo wget https://www.kernel.org/pub/linux/utils/net/bridge-utils/bridge-utils-1.6.tar.xz
 #tar -xzf bridge-utils-1.6.tar.xz.tar.gz

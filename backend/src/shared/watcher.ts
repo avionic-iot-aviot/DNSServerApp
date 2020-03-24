@@ -18,8 +18,10 @@ fs.watchFile(tmpDirectory, (curr: any, prev: any) => {
 })
 
 let tmpDirectoryLeases = path.join(__dirname, '../../src/leases');
+if (cfg.watcher && cfg.watcher.leases_path) {
+    tmpDirectoryLeases = cfg.watcher.leases_path;
+}
 fs.watchFile(tmpDirectoryLeases, (curr: any, prev: any) => {
-    console.log("QUI");
     console.log(
         `[${new Date().toLocaleString()}] Watching for file changes on: ${tmpDirectory}`
     );
