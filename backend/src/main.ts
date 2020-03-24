@@ -1,7 +1,18 @@
 import * as express from 'express';
 const bodyParser = require('body-parser');
-const path = require('path');
 
+const cfg = require('config');
+const path = require('path');
+const dotenv = require('dotenv');
+
+const envFilename = path.join(
+  __dirname,
+  '../',
+  'env/',
+  cfg.env.envFilename
+);
+console.log(`loading env file '${envFilename}'...`);
+dotenv.config({ path: envFilename });
 const app = express();
 app.use(bodyParser.json());
 

@@ -17,7 +17,7 @@ import { role } from '../../shared/constants';
 
 router.get(
   '/refreshtoken', async (
-    req: express.Request,
+    req: any,
     res: express.Response,
     next: express.NextFunction
   ) => {
@@ -53,7 +53,7 @@ router.get(
 
 router.get(
   '/profile', async (
-    req: express.Request,
+    req: any,
     res: express.Response,
     next: express.NextFunction
   ) => {
@@ -80,7 +80,7 @@ router.get(
 
 router.get(
   '/getAll', async (
-    req: express.Request,
+    req: any,
     res: express.Response,
     next: express.NextFunction
   ) => {
@@ -127,7 +127,7 @@ router.get(
 }
 );
 
-router.post('/createUser', async (req, res, next) => {
+router.post('/createUser', async (req: any, res, next) => {
   const user = req.body.params;
   const currentUser: any = req.user;
   try {

@@ -27,16 +27,20 @@ export default class UserStore {
         return knex('users').where({ id }).del();
     }
 
+    deleteAll() {
+        return knex('users').del();
+    }
+
     findBy(user: IUser, without_password: boolean = true): any {
         if (without_password) {
-            return knex('users').select(['id', 'name', 'created_at', 'updated_at']).where(user);
+            return knex('users').select(['id', 'email', 'created_at', 'updated_at']).where(user);
         } else {
             return knex('users').where(user);
         }
     }
 
     findById(id: number): any {
-        return knex('users').select(['id', 'name', 'created_at', 'updated_at']).where({ id });
+        return knex('users').select(['id', 'email', 'created_at', 'updated_at']).where({ id });
     }
 
     findUser(id: number): any {

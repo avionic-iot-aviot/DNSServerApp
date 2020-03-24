@@ -7,9 +7,9 @@ module.exports = {
     connection: {
       filename: path.resolve(__dirname) + "/src/db/dev.sqlite3"
     },
-    seeds: {
-      directory: path.resolve(__dirname) + "/src/db/seeds/development"
-    },
+    // seeds: {
+    //   directory: path.resolve(__dirname) + "/src/db/seeds/development"
+    // },
     migrations: {
       tableName: "migrations",
       directory: path.resolve(__dirname) + "/src/db/migrations"
