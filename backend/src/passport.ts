@@ -26,15 +26,15 @@ export function setupStrategies(passport: any): void {
         passwordField: 'password',
         passReqToCallback: true,
     },
-         async (req: any, email: string, password: string, done: any) => {
-            email = email.trim().toLocaleLowerCase();
+         async (req: any, username: string, password: string, done: any) => {
+            username = username.trim().toLocaleLowerCase();
             let userSearch: IUser = {
-                email
+                username
             }
             const _user = await userStore.findBy(userSearch, false);
             if (_user.length != 0) {
                 const user: IUser = _user[0];
-                if (email === user.email && authHelper.validPassword(password, user.password)) {
+                if (username === user.username && authHelper.validPassword(password, user.password)) {
                     return done(null, user, { message: 'Successfully Login' });
                 } else {
                     return done(null, false, { message: 'Incorrect Password.' });

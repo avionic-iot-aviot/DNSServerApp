@@ -8,10 +8,9 @@ const factory = require('../../shared/factory');
 const router = express.Router();
 const tenantStore = new TenantStore();
 
-
 router.get(
     '/', async (
-        req: express.Request,
+        req: any,
         res: express.Response,
         next: express.NextFunction
     ) => {

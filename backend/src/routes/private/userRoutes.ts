@@ -133,18 +133,17 @@ router.post('/createUser', async (req: any, res, next) => {
   try {
     if (currentUser.role_name == role.SUPER_ADMIN) {
 
-
-      const email = user.email.trim().toLowerCase();
-      user.email = email;
+      const username = user.username.trim().toLowerCase();
+      user.username = username;
       let userSearch: IUser = {
-        email
+        username
       };
       const users = await userStore.findBy(userSearch);
       let message = '';
       if (users.length == 0) {
         const resCreation = await userStore.create(user);
         if (resCreation && resCreation.length == 1) {
-          message = 'Sign Up successfully done'
+          message = 'Creation successfully done'
           const result = factory.generateSuccessResponse(null, null, message);
           res.status(HttpStatus.OK).json(result);
         } else {

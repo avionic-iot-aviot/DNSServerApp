@@ -6,6 +6,7 @@ import { history } from '../../main';
 import * as NotificationActions from '../../actions/notificationActions';
 import authutils from '../../utils/authutils';
 import DNSForm from "../forms/DNSForm";
+import CreateUserForm from "../forms/createUserForm";
 
 interface CompState {
 }
@@ -34,7 +35,8 @@ class HomePage extends DNSBaseComponent<any, CompState> {
 
     render() {
         return (
-            <DNSForm></DNSForm>
+            // <DNSForm></DNSForm>
+            <CreateUserForm></CreateUserForm>
         );
     }
 }

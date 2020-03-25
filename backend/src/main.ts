@@ -4,7 +4,8 @@ const bodyParser = require('body-parser');
 const cfg = require('config');
 const path = require('path');
 const dotenv = require('dotenv');
-
+const expressJwt = require('express-jwt');
+const authenticate = expressJwt({ secret: cfg.jwt.jwtSecret });
 const envFilename = path.join(
   __dirname,
   '../',
@@ -27,10 +28,10 @@ app.use('/dns', pubApiDNSRoute);
 app.use('/user', pubApiUserRoutes);
 
 const prvApiTenantRoute = require('./routes/private/tenantRoutes');
-app.use('/private/tenant', prvApiTenantRoute);
+app.use('/api/private/tenant', authenticate, prvApiTenantRoute);
 const prtApiUserRoutes = require('./routes/private/userRoutes');
 
-app.use('/api/private/user', prtApiUserRoutes);
+app.use('/api/private/user', authenticate, prtApiUserRoutes);
 
 
 const frontendPublic = path.join(__dirname, '../../frontend/public');

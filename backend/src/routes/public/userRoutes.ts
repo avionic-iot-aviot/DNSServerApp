@@ -49,10 +49,5 @@ module.exports = (passport: any) => {
             }
         })(req, res, next);
     });
-
-    // router.post('/logout', async (req, res) => {
-    //     req.logout();
-    //     res.redirect('/');
-    // });
     return router;
 };

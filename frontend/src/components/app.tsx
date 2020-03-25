@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Helpers from '../utils/helpers';
 import TopBar from "./toolbars/topBar";
 import { Button, Container, Segment, Card, Image } from 'semantic-ui-react';
+import TokenWatchdog from './tokenwatchdog';
 
 let container: any;
 class App extends Component<any, any> {
@@ -49,7 +50,7 @@ class App extends Component<any, any> {
     return (
       <> 
       <ToastContainer />
-      {/* <TokenWatchdog {...this.props} />         */}
+      <TokenWatchdog {...this.props} />        
       <Container textAlign="center">
         <Switch>
           {_.map(accessibleRoutes, (route: any, idx: number) => {

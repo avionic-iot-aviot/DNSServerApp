@@ -6,10 +6,10 @@ import { IUser } from '../../interfaces/user';
 class UsersApi extends api {
   createUser(user: IUser) {
     return new BBPromise((resolve, reject) => {
-      const url = '/user/createUser';
+      const url = '/api/private/user/createUser';
       const params = user;
       this.getClient(axiosClient => {
-        axiosClient.post(url, { params })
+        axiosClient.post(url, { params })        
           .then((data) => {
             resolve(data);
           }).catch((error) => {

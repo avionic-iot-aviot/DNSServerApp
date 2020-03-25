@@ -46,6 +46,7 @@ export interface IUser {
     email?: string;
     password?: string;
     role_id?: number;
+    username?: string;
     created_at?: string;
     updated_at?: string;
 }

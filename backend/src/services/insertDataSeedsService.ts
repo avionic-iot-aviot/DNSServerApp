@@ -50,16 +50,15 @@ export default class InsertDataSeedsService {
 
             if (roleRes && roleRes.length == 1) {
                 const user: IUser = {
-                    role_id: roleRes[0].id,
-                    email: process.env.EMAIL_SUPER_ADMIN
+                    username: process.env.USERNAME_SUPER_ADMIN
                 };
-                console.log("user addUserSuperAdmin", user);
 
                 const userRes = await userStore.findBy(user);
                 console.log("userRes", userRes);
                 if (userRes && userRes.length == 0) {
-                    user.password = process.env.PASSWORD_SUPER_ADMIN; await userStore.create(user);
-
+                    user.role_id = roleRes[0].id,
+                        user.email = process.env.EMAIL_SUPER_ADMIN,
+                        user.password = process.env.PASSWORD_SUPER_ADMIN; await userStore.create(user);
                 }
             }
         } catch (error) {
