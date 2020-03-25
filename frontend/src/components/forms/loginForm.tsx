@@ -43,17 +43,9 @@ class LoginForm extends DNSBaseComponent<CompProps | any, CompState> {
     }
 
     componentWillReceiveProps(nextProps: any) {
-        console.log("componentWillReceiveProps LOGIN");
         if (nextProps && nextProps.status && nextProps.status == 'success' && nextProps.userdata) {
             this.props.dispatchNotification(`Login successfully done`, 'success', Math.random());
-            // if (nextProps.userdata.role_name && nextProps.userdata.role_name == role.DATA_OWNER) {
-            //     history.push('/consent');
-            // }
-            // else {
-            console.log("PRE PUSH LOGIN");
-
             history.push('/home');
-            // }
         } else if (nextProps && nextProps.status && nextProps.status == 'error') {
             this.props.dispatchNotification(`Error Login`, 'error', Math.random());
         }

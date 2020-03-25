@@ -15,7 +15,6 @@ class TopBar extends Component<any, CompState> {
   state = { activeItem: 'home' }
 
   componentWillMount() {
-    console.log("componentWillMount TopBar");
     const user = authutils.getTokenPayload();
     if (user) {
       let activeItem = 'home';
