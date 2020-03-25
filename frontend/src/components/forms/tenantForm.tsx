@@ -16,14 +16,17 @@ interface CompProps {
 
 interface CompState {
     confirm_password?: string;
+    email?: string;
     username?: string;
     password?: string;
+    isLogin?: boolean;
 }
 
 
-class LoginForm extends DNSBaseComponent<CompProps | any, CompState> {
+class TenantForm extends DNSBaseComponent<CompProps | any, CompState> {
     state = {
         confirm_password: '',
+        email: '',
         username: '',
         password: '',
     };
@@ -39,12 +42,7 @@ class LoginForm extends DNSBaseComponent<CompProps | any, CompState> {
     }
 
     componentWillReceiveProps(nextProps: any) {
-        if (nextProps && nextProps.status && nextProps.status == 'success' && nextProps.userdata) {
-            this.props.dispatchNotification(`Login successfully done`, 'success', Math.random());
-            history.push('/home');
-        } else if (nextProps && nextProps.status && nextProps.status == 'error') {
-            this.props.dispatchNotification(`Error Login`, 'error', Math.random());
-        }
+
     }
 
     componentWillUnmount() {
@@ -60,11 +58,29 @@ class LoginForm extends DNSBaseComponent<CompProps | any, CompState> {
         });
     }
 
-    handleLoginClick(event: any) {
-        if (this.state.username && this.state.password) {
-            this.props.dispatchLoginAction(this.state.username, this.state.password);
-        } else {
-            this.props.dispatchNotification(`Missing Data`, 'warning', Math.random());
+    async createUser() {
+        try {
+            if (this.state.email && this.state.username && this.state.password && this.state.confirm_password) {
+                const user: IUser = {
+                    username: this.state.username,
+                    email: this.state.email,
+                    password: this.state.password
+                };
+                const registerPromise = UserApi.createUser(user);
+                this.registerPromise(registerPromise);
+                const responseCreate: any = await registerPromise;
+                if (responseCreate && responseCreate.status === 200 && responseCreate.data) {
+                    if (responseCreate.data.message === 'Creation successfully done')
+                        this.props.dispatchNotification('Creation successfully done', 'success', Math.random());
+                    if (responseCreate.data.message === 'User already exists.')
+                        this.props.dispatchNotification(`User already exists.`, 'warning', Math.random());
+                }
+            } else {
+                this.props.dispatchNotification(`Missing Data`, 'warning', Math.random());
+            }
+        } catch (error) {
+            console.log('error: ', error);
+            this.props.dispatchNotification('Sign Up Error', 'error', Math.random());
         }
     }
 
@@ -72,9 +88,8 @@ class LoginForm extends DNSBaseComponent<CompProps | any, CompState> {
         return (
             <Segment raised>
                 <Card fluid centered>
-                    <Image src="../../../public/images/drone.jpg" size="huge" centered></Image>
                     <Card.Content>
-                        <Card.Header className="headerHomePage">Aviot</Card.Header>
+                        <Card.Header className="headerHomePage">Create User</Card.Header>
                         <Card.Description>
 
                             <Form size="small">
@@ -92,6 +107,17 @@ class LoginForm extends DNSBaseComponent<CompProps | any, CompState> {
                                     </Grid.Row>
                                     <Grid.Row width={12}>
                                         <Input
+                                            placeholder="email"
+                                            name="email"
+                                            type="text"
+                                            value={this.state.email}
+                                            onChange={(event: any) => {
+                                                this.handleChange(event);
+                                            }}
+                                        />
+                                    </Grid.Row>
+                                    <Grid.Row width={12}>
+                                        <Input
                                             placeholder="password"
                                             name="password"
                                             type="password"
@@ -101,17 +127,27 @@ class LoginForm extends DNSBaseComponent<CompProps | any, CompState> {
                                             }}
                                         />
                                     </Grid.Row>
+                                    <Grid.Row width={12}>
+                                        <Input
+                                            placeholder="confirm password"
+                                            name="confirm_password"
+                                            type="password"
+                                            value={this.state.confirm_password}
+                                            onChange={(event: any) => {
+                                                this.handleChange(event);
+                                            }}
+                                        />
+                                    </Grid.Row>
                                     <Button
                                         type='submit'
                                         className="buttonLoginForm"
                                         onClick={(event: any) => {
-                                            this.handleLoginClick(event);
+                                            this.createUser(event);
                                         }}
-                                    > Login
+                                    >Crea
                                     </Button>
                                 </Grid>
                             </Form>
-
                         </Card.Description>
                     </Card.Content>
                 </Card>
@@ -141,4 +177,4 @@ const mapDispatchToProps = (dispatch: any) => {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(LoginForm);
+)(TenantForm);

@@ -71,7 +71,6 @@ const DNSForm = () => {
         console.log("name", name);
         console.log("value", value);
         // setState({ ...form });
-
         eval(`set${name}("${value}")`);
     }
 

@@ -13,3 +13,14 @@ export interface IDataResponse {
   error: any;
   message: string;
 }
+
+export interface IPaginationOpts {
+  activePage: number,
+  boundaryRange?: number,
+  siblingRange?: number,
+  showEllipsis?: boolean,
+  showFirstAndLastNav?: boolean,
+  showPreviousAndNextNav?: boolean,
+  totalPages: number;
+  itemPerPage: number;
+}

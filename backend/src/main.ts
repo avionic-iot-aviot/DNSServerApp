@@ -28,9 +28,9 @@ app.use('/dns', pubApiDNSRoute);
 app.use('/user', pubApiUserRoutes);
 
 const prvApiTenantRoute = require('./routes/private/tenantRoutes');
-app.use('/api/private/tenant', authenticate, prvApiTenantRoute);
 const prtApiUserRoutes = require('./routes/private/userRoutes');
 
+app.use('/api/private/tenant', authenticate, prvApiTenantRoute);
 app.use('/api/private/user', authenticate, prtApiUserRoutes);
 
 
