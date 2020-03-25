@@ -17,17 +17,17 @@ module.exports = {
   },
   module: {
     rules: [
-      //   {
-      //     test: /\.css$/,
-      //     use: [
-      //       {
-      //         loader: "style-loader"
-      //       },
-      //       {
-      //         loader: "css-loader"
-      //       }
-      //     ]
-      //   },
+        {
+          test: /\.css$/,
+          use: [
+            {
+              loader: "style-loader"
+            },
+            {
+              loader: "css-loader"
+            }
+          ]
+        },
       {
         include: [/\.json$/, /\.tsx?$/],
         exclude: /node_modules/,

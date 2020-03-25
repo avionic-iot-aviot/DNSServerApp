@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import Helpers from '../utils/helpers';
 import BBPromise from 'bluebird';
 
-export default class ReachBaseComponent<
+export default class DNSBaseComponent<
     CompProps,
     CompState
     > extends React.Component<CompProps, CompState> {

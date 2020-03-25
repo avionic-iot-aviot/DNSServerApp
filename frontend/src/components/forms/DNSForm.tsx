@@ -26,6 +26,7 @@ import DNSApi from './../../api/dnsApi';
 const DNSForm = () => {
     const [mac_address, setMacAddress] = useState('test');
     const [name, setName] = useState('name');
+    console.log("SIAMO QUI?????");
     // const [form, setState] = useState({
     //     ip: '',
     //     mac_address: ''
