@@ -7,7 +7,6 @@ export default class AuthHelper {
 
     generateHash = (password: string) => {
         return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-        // return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
     };
 
     validPassword = (password: string, encrPassword: string) => {

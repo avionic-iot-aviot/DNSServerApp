@@ -5,7 +5,6 @@ const arpService = new ArpService();
 const cfg = require('config');
 const leases = require('dnsmasq-leases');
 let tmpDirectory = path.join(__dirname, '../../src/test.txt');
-console.log("dirr", tmpDirectory);
 if (cfg.watcher && cfg.watcher.path_to_watch) {
     tmpDirectory = cfg.watcher.path_to_watch;
 }
@@ -28,7 +27,6 @@ fs.watchFile(tmpDirectoryLeases, (curr: any, prev: any) => {
     console.log(
         `[${new Date().toLocaleString()}] Watching for file changes on: ${tmpDirectory}`
     );
-
     let data = fs.readFileSync(tmpDirectoryLeases, 'utf8');
     console.log("LEASES", leases(data));
 })
