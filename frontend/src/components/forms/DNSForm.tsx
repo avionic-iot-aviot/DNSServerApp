@@ -6,59 +6,19 @@ import { history } from '../../main';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 import DNSApi from './../../api/dnsApi';
-
-// interface CompProps {
-// }
-
-// interface CompState {
-//     confirm_password?: string;
-//     email?: string;
-//     name?: string;
-//     password?: string;
-//     isLogin?: boolean;
-// }
-
-
-// export default class DNSForm extends DNSBaseComponent<CompProps | any, null> {
-// state = {
-// };
+import DeviceApi from './../../api/deviceApi';
 
 const DNSForm = () => {
-    const [mac_address, setMacAddress] = useState('test');
-    const [name, setName] = useState('name');
-    // const [form, setState] = useState({
-    //     ip: '',
-    //     mac_address: ''
-    // });
-
-
-    // constructor(props: any) {
-    //     super(props);
-    // }
-
-    // componentWillMount() {
-    // }
-
-    // componentDidMount() {
-    // }
-
-    // componentWillReceiveProps(nextProps: any) {
-
-    // }
-
-    // componentWillUnmount() {
-    //     this.cancelPromises();
-    // }
-
-    // render() {
+    const [mac_address, setMacAddress] = useState('');
+    const [dns_name_manual, setDnsNameManual] = useState('');
+  
 
     async function submit() {
         try {
-            const responseInsertion = await DNSApi.addElement({
+            const responseInsertion = await DeviceApi.create({
                 mac_address,
-                name
+                dns_name_manual
             });
-            console.log("CREATED???", responseInsertion);
         } catch (error) {
             console.log("ERROR", error);
         }
@@ -68,9 +28,6 @@ const DNSForm = () => {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
-        console.log("name", name);
-        console.log("value", value);
-        // setState({ ...form });
         eval(`set${name}("${value}")`);
     }
 
@@ -93,8 +50,8 @@ const DNSForm = () => {
                         </Grid.Row>
                         <Grid.Row width={16}>
                             <Input
-                                placeholder="name"
-                                name="Name"
+                                placeholder="dns_name_manual"
+                                name="DnsNameManual"
                                 type="text"
                                 value={name}
                                 onChange={(event: any) => {
