@@ -24,14 +24,17 @@ require('./passport').setupStrategies(passport);
 const pubApiDNSRoute = require('./routes/public/dnsRoutes');
 const pubApiUserRoutes = require('./routes/public/userRoutes')(passport);
 
+const prvApiTenantRoute = require('./routes/private/tenantRoutes');
+const prtApiUserRoutes = require('./routes/private/userRoutes');
+const prtApiDeviceRoutes = require('./routes/private/deviceRoutes');
+
 app.use('/dns', pubApiDNSRoute);
 app.use('/user', pubApiUserRoutes);
 
-const prvApiTenantRoute = require('./routes/private/tenantRoutes');
-const prtApiUserRoutes = require('./routes/private/userRoutes');
-
+app.use('/api/private/device', authenticate, prtApiDeviceRoutes);
 app.use('/api/private/tenant', authenticate, prvApiTenantRoute);
 app.use('/api/private/user', authenticate, prtApiUserRoutes);
+
 
 
 const frontendPublic = path.join(__dirname, '../../frontend/public');

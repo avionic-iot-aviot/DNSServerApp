@@ -1,12 +1,12 @@
 import * as express from 'express';
 import * as HttpStatus from 'http-status-codes';
-import TenantStore from '../../stores/tenantStore';
+import DeviceStore from '../../stores/deviceStore';
 
-import { ITenant, ISearchOpt } from '../../interfaces/interfaces';
+import { IDevice, ISearchOpt } from '../../interfaces/interfaces';
 const _ = require('lodash');
 const factory = require('../../shared/factory');
 const router = express.Router();
-const tenantStore = new TenantStore();
+const deviceStore = new DeviceStore();
 
 router.get(
     '/', async (
@@ -16,13 +16,13 @@ router.get(
     ) => {
     const tenant_id = req.query.id;
     try {
-        const tenantResponse = await tenantStore.findById(tenant_id);
-        if (tenantResponse && tenantResponse.length == 1) {
-            const tenant = tenantResponse[0];
-            const result = factory.generateSuccessResponse(tenant, null, "Tenant found");
+        const deviceResponse = await deviceStore.findById(tenant_id);
+        if (deviceResponse && deviceResponse.length == 1) {
+            const device = deviceResponse[0];
+            const result = factory.generateSuccessResponse(device, null, "Device found");
             res.status(HttpStatus.OK).send(result);
         } else {
-            const result = factory.generateErrorResponse(null, null, "Tenant not found");
+            const result = factory.generateErrorResponse(null, null, "Device not found");
             res.status(HttpStatus.NOT_FOUND).send(result);
         }
     } catch (error) {
@@ -47,21 +47,21 @@ router.get(
         searchOptions.itemsPerPage = searchOptions.itemsPerPage || 25;
         searchOptions.activePage = searchOptions.activePage || 1;
         searchOptions.needle = search || "";
-        const tenantsRes = await tenantStore.getAll(searchOptions);
+        const devicesRes = await deviceStore.getAll(searchOptions);
 
 
-        if (tenantsRes && tenantsRes.length > 0) {
+        if (devicesRes && devicesRes.length > 0) {
             const result = factory.generateSuccessResponse(
-                {tenants: tenantsRes, options: searchOptions},
+                {devices: devicesRes, options: searchOptions},
                 null,
-                'Tenants found'
+                'Devices found'
             );
             res.status(HttpStatus.OK).json(result);
         } else {
             const result = factory.generateSuccessResponse(
                 null,
                 null,
-                'Tenants not found'
+                'Devices not found'
             );
             res.status(HttpStatus.OK).json(result);
         }
@@ -69,7 +69,7 @@ router.get(
         const result = factory.generateErrorResponse(
             null,
             error,
-            'Tenants not found'
+            'Devices not found'
         );
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(result);
     }
@@ -77,14 +77,14 @@ router.get(
 );
 
 router.post('/create', async (req, res, next) => {
-    const tenant = req.body.params;
+    const device = req.body.params;
     try {
-        const tenants = await tenantStore.findBy(tenant);
+        const devices = await deviceStore.findBy(device);
         let message = '';
-        if (!tenants || tenants.length == 0) {
-            const resCreation = await tenantStore.create(tenant);
+        if (!devices || devices.length == 0) {
+            const resCreation = await deviceStore.create(device);
             if (resCreation && resCreation.length == 1) {
-                message = 'Tenant successfully created'
+                message = 'Device successfully created'
                 const result = factory.generateSuccessResponse(null, null, message);
                 res.status(HttpStatus.OK).json(result);
             } else {
@@ -92,7 +92,7 @@ router.post('/create', async (req, res, next) => {
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(result);
             }
         } else {
-            message = 'Tenant already exists'
+            message = 'Device already exists'
             const result = factory.generateSuccessResponse(null, null, message);
             res.status(HttpStatus.OK).json(result);
         }
@@ -104,18 +104,18 @@ router.post('/create', async (req, res, next) => {
 });
 
 router.put('/update', async (req, res, next) => {
-    const tenant = req.body.params;
+    const device = req.body.params;
     try {
-        if (!tenant.id) {
+        if (!device.id) {
             const result = factory.generateErrorResponse(null, null, 'Error');
             res.status(HttpStatus.BAD_REQUEST).json(result);
         }
-        const tenants = await tenantStore.findById(tenant.id);
+        const devices = await deviceStore.findById(device.id);
         let message = '';
-        if (tenants.length == 1) {
-            const resUpdate = await tenantStore.update(tenant);
+        if (devices.length == 1) {
+            const resUpdate = await deviceStore.update(device);
             if (resUpdate && resUpdate.length == 1) {
-                message = 'Tenant successfully updated'
+                message = 'Device successfully updated'
                 const result = factory.generateSuccessResponse(null, null, message);
                 res.status(HttpStatus.OK).json(result);
             } else {
@@ -123,7 +123,7 @@ router.put('/update', async (req, res, next) => {
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(result);
             }
         } else {
-            message = 'Tenant not found'
+            message = 'Device not found'
             const result = factory.generateSuccessResponse(null, null, message);
             res.status(HttpStatus.NOT_FOUND).json(result);
         }

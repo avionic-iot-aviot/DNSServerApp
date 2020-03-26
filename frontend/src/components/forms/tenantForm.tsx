@@ -5,7 +5,7 @@ import * as NotificationActions from '../../actions/notificationActions';
 import * as UserActions from '../../actions/userActions';
 import TenantApi from './../../api/tenantApi';
 import DNSBaseComponent from '../dnsBaseComponent';
-import { Grid, Input, Button, Container, Segment, Card, Image, Form } from 'semantic-ui-react';
+import { Grid, Input, Button, Container, Segment, Card, Image, Form, Icon } from 'semantic-ui-react';
 import { history } from '../../main';
 import _ from 'lodash';
 import { ITenant } from '../../../interfaces/tenant';
@@ -20,7 +20,6 @@ interface CompState {
     description?: string;
     edge_interface_name?: string;
 }
-
 
 class TenantForm extends DNSBaseComponent<CompProps | any, CompState> {
     state = {
@@ -85,51 +84,52 @@ class TenantForm extends DNSBaseComponent<CompProps | any, CompState> {
 
     render() {
         return (
-            <Segment raised>
-                <Card fluid centered>
-                    <Card.Content>
-                        <Card.Header className="headerHomePage">Create Tenant</Card.Header>
-                        <Card.Description>
+            <>
+            <Button floated='right' icon primary size='small' className="customButton"
+                    onClick={() => {
+                        history.push(`/home`);
+                    }}>
+                    <Icon name='arrow left' />
+                </Button>
+            <Segment raised>                
+                    Creazione Tenant
+                <Form size="small">
+                    <Grid textAlign="center" className='loginForm'>
+                        <Grid.Row width={12}>
+                            <Input
+                                placeholder="edge interface name"
+                                name="edge_interface_name"
+                                type="text"
+                                value={this.state.edge_interface_name}
+                                onChange={(event: any) => {
+                                    this.handleChange(event);
+                                }}
+                            />
+                        </Grid.Row>
+                        <Grid.Row width={12}>
+                            <Input
+                                placeholder="description"
+                                name="description"
+                                type="text"
+                                value={this.state.description}
+                                onChange={(event: any) => {
+                                    this.handleChange(event);
+                                }}
+                            />
+                        </Grid.Row>
 
-                            <Form size="small">
-                                <Grid textAlign="center" className='loginForm'>
-                                    <Grid.Row width={12}>
-                                        <Input
-                                            placeholder="edge interface name"
-                                            name="edge_interface_name"
-                                            type="text"
-                                            value={this.state.edge_interface_name}
-                                            onChange={(event: any) => {
-                                                this.handleChange(event);
-                                            }}
-                                        />
-                                    </Grid.Row>
-                                    <Grid.Row width={12}>
-                                        <Input
-                                            placeholder="description"
-                                            name="description"
-                                            type="text"
-                                            value={this.state.description}
-                                            onChange={(event: any) => {
-                                                this.handleChange(event);
-                                            }}
-                                        />
-                                    </Grid.Row>
-
-                                    <Button
-                                        type='submit'
-                                        className="buttonLoginForm"
-                                        onClick={(event: any) => {
-                                            this.createTenant();
-                                        }}
-                                    >Crea
-                                    </Button>
-                                </Grid>
-                            </Form>
-                        </Card.Description>
-                    </Card.Content>
-                </Card>
+                        <Button
+                            type='submit'
+                            className="buttonLoginForm"
+                            onClick={(event: any) => {
+                                this.createTenant();
+                            }}
+                        >Crea
+                        </Button>
+                    </Grid>
+                </Form>
             </Segment>
+            </>
         );
     }
 }
