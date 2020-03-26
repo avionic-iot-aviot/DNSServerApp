@@ -16,11 +16,6 @@ export interface IDataResponse {
 
 export interface IPaginationOpts {
   activePage: number,
-  boundaryRange?: number,
-  siblingRange?: number,
-  showEllipsis?: boolean,
-  showFirstAndLastNav?: boolean,
-  showPreviousAndNextNav?: boolean,
   totalPages: number;
-  itemPerPage: number;
+  itemsPerPage: number;
 }

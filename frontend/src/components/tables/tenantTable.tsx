@@ -35,7 +35,7 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
         paginationOpts: {
             activePage: 1,
             totalPages: 1,
-            itemPerPage: Constants.pagination.itemPerPage
+            itemsPerPage: Constants.pagination.itemsPerPage
         },
         search: '',
         selectedTenant: {},
@@ -113,16 +113,16 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
             const options = search ? {
                 activePage: 1,
                 totalPages: 1,
-                itemPerPage: Constants.pagination.itemPerPage
+                itemsPerPage: Constants.pagination.itemsPerPage
             } : this.state.paginationOpts;
             const getTenantsPromise = TenantApi.getAll(options, searchValue);
             this.registerPromise(getTenantsPromise);
             const tenantsResponse: any = await getTenantsPromise;
             const newSearch = search ? this.state.search : "";
-            if (tenantsResponse && tenantsResponse.data && tenantsResponse.data.payload) {            
+            if (tenantsResponse && tenantsResponse.data && tenantsResponse.data.payload.tenants && tenantsResponse.data.payload.options) {            
                 _.defer(() => {
                     this.setState({
-                        tenants: tenantsResponse.data.payload,
+                        tenants: tenantsResponse.data.payload.tenants,
                         paginationOpts: tenantsResponse.data.payload.options,
                         search: newSearch,
                         loading: false
@@ -135,7 +135,7 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
                         paginationOpts: {
                             activePage: 1,
                             totalPages: 1,
-                            itemPerPage: Constants.pagination.itemPerPage
+                            itemsPerPage: Constants.pagination.itemsPerPage
                         },
                         search: newSearch,
                         loading: false
@@ -228,7 +228,7 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
                                     <Table.Footer fullWidth>
                                         <Table.Row>
                                             <Table.HeaderCell colSpan='1'>
-                                                {/* <Pagination
+                                                <Pagination
                                                     activePage={this.state.paginationOpts.activePage}
                                                     boundaryRange={1}
                                                     size='mini'
@@ -236,7 +236,7 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
                                                         this.handlePaginationChange(event, { activePage });
                                                     }}
                                                     totalPages={this.state.paginationOpts.totalPages}
-                                                /> */}
+                                                />
                                             </Table.HeaderCell>
 
                                             <Table.HeaderCell colSpan='1' className="buttonCell">

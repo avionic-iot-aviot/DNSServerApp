@@ -3,6 +3,7 @@ import _ from 'lodash';
 import LoginPage from './components/pages/loginPage';
 import DNSForm from './components/forms/DNSForm';
 import HomePage from './components/pages/homePage';
+import TenantForm from './components/forms/tenantForm';
 
 interface ApplicationRouteGroup {
     name: string;
@@ -39,6 +40,15 @@ export const appRoutes: ApplicationRouteGroup[] = [
                 exact: true,
                 component: HomePage,
                 menuLabel: 'home',
+                showTopbar: true
+            },
+            {
+                path: '/tenant/new',
+                name: 'tenant',
+                restricted: false,
+                exact: true,
+                component: TenantForm,
+                menuLabel: 'Tenant',
                 showTopbar: true
             },
         ]

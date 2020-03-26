@@ -11,7 +11,7 @@ class TenantsApi extends api {
             const url = '/api/private/tenant/create';
             let params = tenant;
             this.getClient(axiosClient => {
-                axiosClient.post(url, params)
+                axiosClient.post(url, { params })
                     .then((data) => {
                         resolve(data);
                     }).catch((error) => {

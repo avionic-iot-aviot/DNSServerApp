@@ -1,4 +1,4 @@
-import { ITenant } from '../interfaces/interfaces';
+import { ITenant, ISearchOpt } from '../interfaces/interfaces';
 const _ = require('lodash');
 const moment = require('moment');
 const config = require('../../../backend/knexfile');
@@ -31,5 +31,21 @@ export default class TenantStore {
 
     findAll() {
         return knex('tenants').returning('*');
+    }
+
+    getAll(options: ISearchOpt) {
+        return knex.raw(`SELECT *
+            FROM tenants
+            WHERE description LIKE '%${options.needle}%'
+            OR edge_interface_name LIKE '%${options.needle}%'
+            ORDER BY created_at DESC
+            LIMIT ${options.itemsPerPage}
+            OFFSET ${(options.itemsPerPage * (options.activePage - 1))}`          
+            )
+            .then((data: any) => {
+            return data;
+        }).catch((err: any) => {
+            return err;
+        });
     }
 }

@@ -3,32 +3,29 @@ import { connect } from 'react-redux';
 import authutils from '../../utils/authutils';
 import * as NotificationActions from '../../actions/notificationActions';
 import * as UserActions from '../../actions/userActions';
-import UserApi from './../../api/userApi';
+import TenantApi from './../../api/tenantApi';
 import DNSBaseComponent from '../dnsBaseComponent';
 import { Grid, Input, Button, Container, Segment, Card, Image, Form } from 'semantic-ui-react';
 import { history } from '../../main';
 import _ from 'lodash';
-import { Link } from 'react-router-dom';
-import { IUser } from '../../../interfaces/user';
+import { ITenant } from '../../../interfaces/tenant';
 
 interface CompProps {
+    tenant?: ITenant;
+    onBack?: (arg?: any) => any;
+
 }
 
 interface CompState {
-    confirm_password?: string;
-    email?: string;
-    username?: string;
-    password?: string;
-    isLogin?: boolean;
+    description?: string;
+    edge_interface_name?: string;
 }
 
 
 class TenantForm extends DNSBaseComponent<CompProps | any, CompState> {
     state = {
-        confirm_password: '',
-        email: '',
-        username: '',
-        password: '',
+        description: '',
+        edge_interface_name: ''
     };
 
     constructor(props: any) {
@@ -58,22 +55,24 @@ class TenantForm extends DNSBaseComponent<CompProps | any, CompState> {
         });
     }
 
-    async createUser() {
+    async createTenant() {
         try {
-            if (this.state.email && this.state.username && this.state.password && this.state.confirm_password) {
-                const user: IUser = {
-                    username: this.state.username,
-                    email: this.state.email,
-                    password: this.state.password
+            if (this.state.edge_interface_name && this.state.description) {
+                const tenant: ITenant = {
+                    description: this.state.description,
+                    edge_interface_name: this.state.edge_interface_name
                 };
-                const registerPromise = UserApi.createUser(user);
+                const registerPromise = TenantApi.create(tenant);
                 this.registerPromise(registerPromise);
                 const responseCreate: any = await registerPromise;
                 if (responseCreate && responseCreate.status === 200 && responseCreate.data) {
-                    if (responseCreate.data.message === 'Creation successfully done')
+                    if (responseCreate.data.message === 'Tenant successfully created') {
                         this.props.dispatchNotification('Creation successfully done', 'success', Math.random());
-                    if (responseCreate.data.message === 'User already exists.')
-                        this.props.dispatchNotification(`User already exists.`, 'warning', Math.random());
+                    } else if (responseCreate.data.message === 'Tenant already exists') {
+                        this.props.dispatchNotification('Creation successfully done', 'warning', Math.random());
+                    } else {
+                        this.props.dispatchNotification(`Error creation.`, 'error', Math.random());
+                    }
                 }
             } else {
                 this.props.dispatchNotification(`Missing Data`, 'warning', Math.random());
@@ -89,17 +88,17 @@ class TenantForm extends DNSBaseComponent<CompProps | any, CompState> {
             <Segment raised>
                 <Card fluid centered>
                     <Card.Content>
-                        <Card.Header className="headerHomePage">Create User</Card.Header>
+                        <Card.Header className="headerHomePage">Create Tenant</Card.Header>
                         <Card.Description>
 
                             <Form size="small">
                                 <Grid textAlign="center" className='loginForm'>
                                     <Grid.Row width={12}>
                                         <Input
-                                            placeholder="username"
-                                            name="username"
+                                            placeholder="edge interface name"
+                                            name="edge_interface_name"
                                             type="text"
-                                            value={this.state.username}
+                                            value={this.state.edge_interface_name}
                                             onChange={(event: any) => {
                                                 this.handleChange(event);
                                             }}
@@ -107,42 +106,21 @@ class TenantForm extends DNSBaseComponent<CompProps | any, CompState> {
                                     </Grid.Row>
                                     <Grid.Row width={12}>
                                         <Input
-                                            placeholder="email"
-                                            name="email"
+                                            placeholder="description"
+                                            name="description"
                                             type="text"
-                                            value={this.state.email}
+                                            value={this.state.description}
                                             onChange={(event: any) => {
                                                 this.handleChange(event);
                                             }}
                                         />
                                     </Grid.Row>
-                                    <Grid.Row width={12}>
-                                        <Input
-                                            placeholder="password"
-                                            name="password"
-                                            type="password"
-                                            value={this.state.password}
-                                            onChange={(event: any) => {
-                                                this.handleChange(event);
-                                            }}
-                                        />
-                                    </Grid.Row>
-                                    <Grid.Row width={12}>
-                                        <Input
-                                            placeholder="confirm password"
-                                            name="confirm_password"
-                                            type="password"
-                                            value={this.state.confirm_password}
-                                            onChange={(event: any) => {
-                                                this.handleChange(event);
-                                            }}
-                                        />
-                                    </Grid.Row>
+
                                     <Button
                                         type='submit'
                                         className="buttonLoginForm"
                                         onClick={(event: any) => {
-                                            this.createUser(event);
+                                            this.createTenant();
                                         }}
                                     >Crea
                                     </Button>

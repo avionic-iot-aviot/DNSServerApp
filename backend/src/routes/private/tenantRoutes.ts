@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as HttpStatus from 'http-status-codes';
 import TenantStore from '../../stores/tenantStore';
 
-import { ITenant } from '../../interfaces/interfaces';
+import { ITenant, ISearchOpt } from '../../interfaces/interfaces';
 const _ = require('lodash');
 const factory = require('../../shared/factory');
 const router = express.Router();
@@ -41,10 +41,19 @@ router.get(
         next: express.NextFunction
     ) => {
     try {
-        const tenantsRes = await tenantStore.findAll();
+        console.log("req.query", req.query);
+        const options = req.query.options;
+        const search = req.query.search;
+        let searchOptions: ISearchOpt = options ? JSON.parse(options) : {};
+        searchOptions.itemsPerPage = searchOptions.itemsPerPage || 25;
+        searchOptions.activePage = searchOptions.activePage || 1;
+        searchOptions.needle = search || "";
+        const tenantsRes = await tenantStore.getAll(searchOptions);
+
+
         if (tenantsRes && tenantsRes.length > 0) {
             const result = factory.generateSuccessResponse(
-                tenantsRes,
+                {tenants: tenantsRes, options: searchOptions},
                 null,
                 'Tenants found'
             );
@@ -75,8 +84,6 @@ router.post('/create', async (req, res, next) => {
         let message = '';
         if (!tenants || tenants.length == 0) {
             const resCreation = await tenantStore.create(tenant);
-            console.log("resCreatio", resCreation);
-
             if (resCreation && resCreation.length == 1) {
                 message = 'Tenant successfully created'
                 const result = factory.generateSuccessResponse(null, null, message);
@@ -86,7 +93,7 @@ router.post('/create', async (req, res, next) => {
                 res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(result);
             }
         } else {
-            message = 'Tenant already exists.'
+            message = 'Tenant already exists'
             const result = factory.generateSuccessResponse(null, null, message);
             res.status(HttpStatus.OK).json(result);
         }

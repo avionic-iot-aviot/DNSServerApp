@@ -12,6 +12,6 @@ export const jwt = {
 };
 
 export const pagination = {
-  itemPerPage: 25
+  itemsPerPage: 25
 };
 

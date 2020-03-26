@@ -34,6 +34,14 @@ export interface IRole {
     name?: string;
 }
 
+export interface ISearchOpt {
+    count?: number;
+    needle?: string;
+    itemsPerPage?: number;
+    activePage?: number;
+    totalPages?: number;
+  }
+
 export interface ITenant {
     id?: number;
     description?: string;
