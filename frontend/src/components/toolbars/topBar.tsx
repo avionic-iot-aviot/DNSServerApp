@@ -50,6 +50,13 @@ class TopBar extends Component<any, CompState> {
               this.onClick('home');
             }}
           />
+          <Menu.Item
+            name='device'
+            active={activeItem === 'devices'}
+            onClick={() => {
+              this.onClick('devices');
+            }}
+          />
           <Menu.Menu position='right'>
             <Input className='loggedUserInput'>{email}</Input>
             <Button

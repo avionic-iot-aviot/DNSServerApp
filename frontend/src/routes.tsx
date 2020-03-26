@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import LoginPage from './components/pages/loginPage';
 import DNSForm from './components/forms/DNSForm';
+import DevicePage from './components/pages/devicePage';
 import HomePage from './components/pages/homePage';
 import TenantForm from './components/forms/tenantForm';
 
@@ -32,6 +33,15 @@ export const appRoutes: ApplicationRouteGroup[] = [
                 component: LoginPage,
                 menuLabel: 'Login',
                 showTopbar: false
+            },
+            {
+                path: '/devices',
+                name: 'device',
+                restricted: false,
+                exact: true,
+                component: DevicePage,
+                menuLabel: 'device',
+                showTopbar: true
             },
             {
                 path: '/home',

@@ -19,7 +19,7 @@ export interface IDevice {
     is_gw?: boolean;
     gw_id?: number;
     mac_address?: string;
-    tenant_id: number;
+    tenant_id?: number;
     updated_at?: string;
 }
 
