@@ -1,0 +1,8 @@
+.searchInput {
+    float: right !important;
+    margin-bottom: 15px !important;
+}
+
+.searchInput input {
+    border-radius: 20px !important;
+}

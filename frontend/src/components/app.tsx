@@ -11,6 +11,7 @@ import Helpers from '../utils/helpers';
 import TopBar from "./toolbars/topBar";
 import { Button, Container, Segment, Card, Image } from 'semantic-ui-react';
 import TokenWatchdog from './tokenwatchdog';
+import './../../public/css/global.css';
 
 let container: any;
 class App extends Component<any, any> {
@@ -30,11 +31,11 @@ class App extends Component<any, any> {
   }
 
   componentWillMount() {
-
-  }
+}
   componentDidMount() { }
 
   componentWillUnmount() {
+
   }
 
   componentWillReceiveProps(nextProps: any) {
@@ -48,43 +49,43 @@ class App extends Component<any, any> {
 
     let accessibleRoutes: any[] = getRoutesGroupByName('public');
     return (
-      <> 
-      <ToastContainer />
-      <TokenWatchdog {...this.props} />        
-      <Container textAlign="center">
-        <Switch>
-          {_.map(accessibleRoutes, (route: any, idx: number) => {
-            if (route.showTopbar) {
-              return (
-                <Route
-                  key={idx}
-                  path={route.path}
-                  exact={route.exact}
-                  render={
-                    props => (
-                      <TopBar className="topBar" {...props}>
-                        <Card fluid centered className="cardStyle">
-                          <route.component {...props}></route.component>
-                        </Card>
-                      </TopBar>
-                    )
-                  }
-                />
-              );
-            } else {
-              return (
-                <Route
-                  key={idx}
-                  path={route.path}
-                  exact={route.exact}
-                  component={route.component}
-                />
-              );
-            }
-          })}
-          <Redirect from="*" to="/" />
-        </Switch>
-      </Container>       
+      <>
+        <ToastContainer />
+        <TokenWatchdog {...this.props} />
+        <Container textAlign="center">
+          <Switch>
+            {_.map(accessibleRoutes, (route: any, idx: number) => {
+              if (route.showTopbar) {
+                return (
+                  <Route
+                    key={idx}
+                    path={route.path}
+                    exact={route.exact}
+                    render={
+                      props => (
+                        <TopBar className="topBar" {...props}>
+                          <Card fluid centered className="cardStyle">
+                            <route.component {...props}></route.component>
+                          </Card>
+                        </TopBar>
+                      )
+                    }
+                  />
+                );
+              } else {
+                return (
+                  <Route
+                    key={idx}
+                    path={route.path}
+                    exact={route.exact}
+                    component={route.component}
+                  />
+                );
+              }
+            })}
+            <Redirect from="*" to="/" />
+          </Switch>
+        </Container>
       </>
     );
   }

@@ -1,0 +1,27 @@
+.addIcon {
+    width: 3% !important;
+    min-width: 48px;
+    border: 1px solid;
+    padding: 6px !important;
+}
+
+.buttonCell {
+    text-align: right !important;
+}
+
+/* i.circular.icon {
+    padding: 6px !important;
+} */
+
+.icon .addIcon{
+    background-color: white;
+}
+
+.customButtonRemove {
+    background-color: #0d4c86 !important;
+    border-radius: 20px !important;
+    border: none !important;
+    color: #f6a531 !important;
+}
+
+

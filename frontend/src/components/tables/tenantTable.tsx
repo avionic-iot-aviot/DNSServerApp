@@ -5,7 +5,7 @@ import DNSBaseComponent from '../dnsBaseComponent';
 import TenantApi from '../../api/tenantApi'
 import { history } from '../../main';
 import _ from 'lodash';
-// import tenantCSS from './../../../public/css/tenant.css';
+import './../../../public/css/tenant.css';
 import { Table, Button, Icon, Container, Pagination, Popup, Input, Loader, Label, Grid } from 'semantic-ui-react';
 
 import TenantForm from '../forms/tenantForm';
@@ -23,7 +23,7 @@ interface CompState {
     paginationOpts: IPaginationOpts;
     search: string;
     selectedTenant: ITenant;
-    tenants: any[];
+    tenants: ITenant[];
     updateTenant: boolean;
 }
 
@@ -48,8 +48,6 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
     }
 
     componentWillMount() {
-        // INJECT COMPONENT-SPECIFIC STYLES
-        // tenantCSS.use();
     }
     componentDidMount() {
         this.init();
@@ -61,7 +59,6 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
 
     componentWillUnmount() {
         this.cancelPromises();
-        // tenantCSS.unuse();
     }
 
     init() {
@@ -92,7 +89,7 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
     }
 
     async handleRemoveTenant(tenant: ITenant) {
-        // this.setState({ loading: true });
+        this.setState({ loading: true });
         _.defer(async () => {
             const removeTenantPromise = TenantApi.delete(tenant.id);
             this.registerPromise(removeTenantPromise);
@@ -122,13 +119,10 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
             this.registerPromise(getTenantsPromise);
             const tenantsResponse: any = await getTenantsPromise;
             const newSearch = search ? this.state.search : "";
-            console.log("tenantsResponse", tenantsResponse);
-            if (tenantsResponse && tenantsResponse.data && tenantsResponse.data.payload) {
-                console.log("tenantsResponse.data.payload", tenantsResponse.data.payload);
-            
+            if (tenantsResponse && tenantsResponse.data && tenantsResponse.data.payload) {            
                 _.defer(() => {
                     this.setState({
-                        tenants: tenantsResponse.data.payload.tenants,
+                        tenants: tenantsResponse.data.payload,
                         paginationOpts: tenantsResponse.data.payload.options,
                         search: newSearch,
                         loading: false
@@ -233,7 +227,7 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
                                     </Table.Body>
                                     <Table.Footer fullWidth>
                                         <Table.Row>
-                                            <Table.HeaderCell colSpan='2'>
+                                            <Table.HeaderCell colSpan='1'>
                                                 {/* <Pagination
                                                     activePage={this.state.paginationOpts.activePage}
                                                     boundaryRange={1}
