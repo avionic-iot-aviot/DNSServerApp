@@ -119,7 +119,7 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
             this.registerPromise(getDevicesPromise);
             const devicesResponse: any = await getDevicesPromise;
             const newSearch = search ? this.state.search : "";
-            if (devicesResponse && devicesResponse.data && devicesResponse.data.payload.devices && devicesResponse.data.payload.options) {            
+            if (devicesResponse && devicesResponse.data && devicesResponse.data.payload.devices && devicesResponse.data.payload.options) {
                 _.defer(() => {
                     this.setState({
                         devices: devicesResponse.data.payload.devices,
@@ -145,7 +145,7 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
         });
     }
 
-     renderTenants() {
+    renderTenants() {
         console.log("this.state.devices", this.state.devices);
 
         return _.map(this.state.devices, (device: IDevice, idx) => {
@@ -159,6 +159,25 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
                     <Table.Cell
                         className="truncate cellTable"
                     >{device.dns_name_manual}
+                    </Table.Cell>
+                    <Table.Cell
+                        className="truncate cellTable"
+                    >
+
+
+                        <Icon
+                            className='customIcon'
+                            name='tag'
+                            color='blue'
+                            onClick={() => {
+                                history.push({
+                                    pathname: `/device/edit/${device.id}`,
+                                    state: { device }
+                                })
+
+                            }}
+                        ></Icon>
+
                     </Table.Cell>
                 </Table.Row>
             )
@@ -220,6 +239,8 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
                                         <Table.Row>
                                             <Table.HeaderCell>Mac Address</Table.HeaderCell>
                                             <Table.HeaderCell>DNS Name Manual</Table.HeaderCell>
+                                            <Table.HeaderCell>Actions</Table.HeaderCell>
+
                                         </Table.Row>
                                     </Table.Header>
                                     <Table.Body>
@@ -227,7 +248,7 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
                                     </Table.Body>
                                     <Table.Footer fullWidth>
                                         <Table.Row>
-                                            <Table.HeaderCell colSpan='1'>
+                                            <Table.HeaderCell colSpan='12'>
                                                 <Pagination
                                                     activePage={this.state.paginationOpts.activePage}
                                                     boundaryRange={1}

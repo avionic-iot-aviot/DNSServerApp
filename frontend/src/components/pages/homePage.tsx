@@ -5,7 +5,7 @@ import DNSBaseComponent from '../dnsBaseComponent';
 import { history } from '../../main';
 import * as NotificationActions from '../../actions/notificationActions';
 import authutils from '../../utils/authutils';
-import DNSForm from "../forms/DNSForm";
+import DeviceForm from "../forms/deviceForm";
 import CreateUserForm from "../forms/createUserForm";
 import TenantTable from "../tables/tenantTable";
 
@@ -36,8 +36,6 @@ class HomePage extends DNSBaseComponent<any, CompState> {
 
     render() {
         return (
-            // <DNSForm></DNSForm>
-            // <CreateUserForm></CreateUserForm>
             <TenantTable></TenantTable>
         );
     }

@@ -14,9 +14,9 @@ router.get(
         res: express.Response,
         next: express.NextFunction
     ) => {
-    const tenant_id = req.query.id;
+    const device_id = req.query.id;
     try {
-        const deviceResponse = await deviceStore.findById(tenant_id);
+        const deviceResponse = await deviceStore.findById(device_id);
         if (deviceResponse && deviceResponse.length == 1) {
             const device = deviceResponse[0];
             const result = factory.generateSuccessResponse(device, null, "Device found");
@@ -52,7 +52,7 @@ router.get(
 
         if (devicesRes && devicesRes.length > 0) {
             const result = factory.generateSuccessResponse(
-                {devices: devicesRes, options: searchOptions},
+                { devices: devicesRes, options: searchOptions },
                 null,
                 'Devices found'
             );
@@ -106,6 +106,9 @@ router.post('/create', async (req, res, next) => {
 router.put('/update', async (req, res, next) => {
     const device = req.body.params;
     try {
+        console.log("device", device);
+        console.log("req.body", req.body);
+
         if (!device.id) {
             const result = factory.generateErrorResponse(null, null, 'Error');
             res.status(HttpStatus.BAD_REQUEST).json(result);
@@ -114,7 +117,7 @@ router.put('/update', async (req, res, next) => {
         let message = '';
         if (devices.length == 1) {
             const resUpdate = await deviceStore.update(device);
-            if (resUpdate && resUpdate.length == 1) {
+            if (resUpdate) {
                 message = 'Device successfully updated'
                 const result = factory.generateSuccessResponse(null, null, message);
                 res.status(HttpStatus.OK).json(result);

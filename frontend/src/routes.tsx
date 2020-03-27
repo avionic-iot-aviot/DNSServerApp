@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import LoginPage from './components/pages/loginPage';
-import DNSForm from './components/forms/DNSForm';
+import DeviceForm from './components/forms/deviceForm';
 import DevicePage from './components/pages/devicePage';
 import HomePage from './components/pages/homePage';
 import TenantForm from './components/forms/tenantForm';
@@ -48,8 +48,17 @@ export const appRoutes: ApplicationRouteGroup[] = [
                 name: 'device',
                 restricted: false,
                 exact: true,
-                component: DNSForm,
+                component: DeviceForm,
                 menuLabel: 'device',
+                showTopbar: true
+            },
+            {
+                path: '/device/edit/:device_id',
+                name: 'tutor',
+                restricted: false,
+                exact: true,
+                component: DeviceForm,
+                menuLabel: 'Tutor',
                 showTopbar: true
             },
             {
@@ -75,7 +84,7 @@ export const appRoutes: ApplicationRouteGroup[] = [
     {
         name: 'private',
         routes: [
-           
+
         ]
     }
 ];

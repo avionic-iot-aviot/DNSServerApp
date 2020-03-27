@@ -26,7 +26,7 @@ class TenantsApi extends api {
             const url = '/api/private/tenant/update';
             let params = tenant;
             this.getClient(axiosClient => {
-                axiosClient.put(url, params)
+                axiosClient.put(url, { params })
                     .then((data) => {
                         resolve(data);
                     }).catch((error) => {

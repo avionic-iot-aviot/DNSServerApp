@@ -26,7 +26,7 @@ class DevicesApi extends api {
             const url = '/api/private/device/update';
             let params = device;
             this.getClient(axiosClient => {
-                axiosClient.put(url, params)
+                axiosClient.put(url, { params })
                     .then((data) => {
                         resolve(data);
                     }).catch((error) => {
@@ -57,6 +57,22 @@ class DevicesApi extends api {
         });
     }
 
+    getById(device_id: number) {
+        return new BBPromise((resolve, reject) => {
+            const url = '/api/private/device';
+            let params: any = { id: device_id };
+
+            this.getClient(axiosClient => {
+                axiosClient.get(url, { params })
+                    .then((data) => {
+                        resolve(data);
+                    }).catch((error) => {
+                        resolve(error);
+                    });
+            }, null, false);
+        });
+    }
+
     async delete(tenant_id: number): BBPromise<any> {
         return new BBPromise((resolve, reject) => {
             const url = '/api/private/device/delete';
@@ -73,5 +89,5 @@ class DevicesApi extends api {
     }
 }
 
-const treatmentsApi = new DevicesApi();
-export default treatmentsApi;
+const devicesApi = new DevicesApi();
+export default devicesApi;
