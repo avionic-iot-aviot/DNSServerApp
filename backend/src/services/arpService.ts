@@ -37,24 +37,33 @@ export default class PingService {
     }
 
     async addInfoGWAndTenantToDevices(arpData: any, contactedGW: any) {
+        // MAC address dei gateway che sono stati contattati
         const gwMacs = Object.keys(contactedGW);
         const leases = Utilities.getCurrentLeases();
         if (arpData) {
             await Object.keys(arpData).forEach(async (interfaceKey: string) => {
+                console.log("interfaceKey", interfaceKey);
                 const mac_addresses = arpData[interfaceKey].mac_addresses;
                 if (mac_addresses && Object.keys(mac_addresses).length > 0) {
                     let tenantRes = await tenantStore.findBy({ edge_interface_name: interfaceKey });
                     if (tenantRes && tenantRes.length == 1) {
                         const tenant = tenantRes[0];
+                        console.log("tenant", tenant);
+
                         let currentGWId: number = null;
                         await Object.keys(mac_addresses).forEach(async (key: string) => {
+                            console.log("mac_address", key);
+
                             if (gwMacs.includes(key)) {
                                 let gwInterface: IDevice = {
                                     mac_address: key,
                                     tenant_id: tenant.id
                                 };
+                                console.log("gwInterface Device", gwInterface);
+
                                 const gwRes = await deviceStore.findBy(gwInterface);
                                 gwInterface.is_gw = true;
+                                // aggiunge o aggiorna il gateway nell DB (tabella devices)
                                 if (gwRes && gwRes.length == 1) {
                                     gwInterface.id = gwRes[0].id;
                                     // verificare result update
@@ -66,14 +75,16 @@ export default class PingService {
                                 } else {
                                     // verificare result create
                                     const createRes = await deviceStore.create(gwInterface);
+                                    console.log("createRes", createRes);
                                     if (createRes) {
                                         currentGWId = createRes[0];
                                     }
                                 }
+                                return;
                                 // }
-                                // ELSE??? no
                                 const ipaddrs: string[] = mac_addresses[key];
                                 await ipaddrs.forEach(async (ip: string) => {
+                                    // se IP non è quello del Gateway
                                     if (ip != contactedGW[key]) {
                                         const currentLeases = leases.filter((val: ILease) => val.ip == ip);
                                         if (currentLeases && currentLeases.length == 1) {

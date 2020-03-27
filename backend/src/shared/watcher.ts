@@ -16,7 +16,7 @@ fs.watchFile(tmpDirectory, (curr: any, prev: any) => {
         `[${new Date().toLocaleString()}] Watching for file changes on: ${tmpDirectory}`
     );
     arpService.execute();
-})
+});
 
 let tmpDirectoryLeases = path.join(__dirname, '../../src/leases');
 if (cfg.watcher && cfg.watcher.leases_path) {
@@ -29,6 +29,6 @@ fs.watchFile(tmpDirectoryLeases, (curr: any, prev: any) => {
     );
     let data = fs.readFileSync(tmpDirectoryLeases, 'utf8');
     console.log("LEASES", leases(data));
-})
+});
 
 
