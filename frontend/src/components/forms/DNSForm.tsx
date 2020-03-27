@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DNSBaseComponent from '../dnsBaseComponent';
 
-import { Grid, Input, Button, Container, Segment, Card, Image, Form } from 'semantic-ui-react';
+import { Grid, Input, Button, Container, Segment, Card, Image, Form, Icon } from 'semantic-ui-react';
 import { history } from '../../main';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
@@ -11,7 +11,7 @@ import DeviceApi from './../../api/deviceApi';
 const DNSForm = () => {
     const [mac_address, setMacAddress] = useState('');
     const [dns_name_manual, setDnsNameManual] = useState('');
-  
+
 
     async function submit() {
         try {
@@ -33,6 +33,12 @@ const DNSForm = () => {
 
     return (
         <>
+            <Button floated='right' icon primary size='small' className="customButton"
+                onClick={() => {
+                    history.push(`/devices`);
+                }}>
+                <Icon name='arrow left' />
+            </Button>
             <Segment>
                 <h1>Aggiungi elemento</h1>
                 <Form>

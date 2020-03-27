@@ -38,7 +38,7 @@ export default class PingService {
 
     async addInfoGWAndTenantToDevices(arpData: any, contactedGW: any) {
         const gwMacs = Object.keys(contactedGW);
-        const leases = dnsService.getCurrentLeases();
+        const leases = Utilities.getCurrentLeases();
         if (arpData) {
             await Object.keys(arpData).forEach(async (interfaceKey: string) => {
                 const mac_addresses = arpData[interfaceKey].mac_addresses;
@@ -136,8 +136,8 @@ export default class PingService {
         try {
             const tenants = await tenantStore.findAll();
             if (tenants) {
-                // const tenantInterfaces = tenants.map((val: ITenant) => val.edge_interface_name);
-                const tenantInterfaces: string[] = [cfg.arp.interface];
+                const tenantInterfaces = tenants.map((val: ITenant) => val.edge_interface_name);
+                // const tenantInterfaces: string[] = [cfg.arp.interface];
                 const promise = new Promise((resolve, reject) => {
                     let tbl: any = {};
 

@@ -1,5 +1,8 @@
 import { IResultRequest } from "../interfaces/interfaces";
+const cfg = require('config');
+const leases = require('dnsmasq-leases');
 const fs = require('fs');
+const path = require('path');
 const request = require('request');
 
 export class Utilities {
@@ -34,5 +37,23 @@ export class Utilities {
             if (err) console.log(err);
             else console.log("file saved");
         });
+    }
+
+      // il metodo legge il file relativo alle leases (es. dnsmasq.leases) e ritorna un array di oggetti
+    // dove ogni oggetto ha come keys: mac, ip, host, timestamp
+    static getCurrentLeases() {
+        try {
+            let tmpDirectoryLeases = cfg.watcher && cfg.watcher.leases_path ? cfg.watcher.leases_path : path.join(__dirname, '../../src/leases');
+            let leasesData = [];
+            let data = fs.readFileSync(tmpDirectoryLeases, 'utf8');
+            console.log("data", data);
+            if (data) {
+                leasesData = leases(data);
+            }
+            return leasesData;
+        } catch (error) {
+            console.log("ERROR", error);
+            return null;
+        }
     }
 }

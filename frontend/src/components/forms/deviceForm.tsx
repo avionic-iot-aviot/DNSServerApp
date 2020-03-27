@@ -66,10 +66,10 @@ class DeviceForm extends DNSBaseComponent<CompProps | any, CompState> {
         try {
             if (this.state.mac_address && this.state.dns_name_manual) {
                 const tenant: IDevice = {
-                    description: this.state.description,
-                    edge_interface_name: this.state.edge_interface_name
+                    mac_address: this.state.mac_address,
+                    dns_name_manual: this.state.dns_name_manual
                 };
-                const registerPromise = TenantApi.create(tenant);
+                const registerPromise = DeviceApi.create(tenant);
                 this.registerPromise(registerPromise);
                 const responseCreate: any = await registerPromise;
                 if (responseCreate && responseCreate.status === 200 && responseCreate.data) {

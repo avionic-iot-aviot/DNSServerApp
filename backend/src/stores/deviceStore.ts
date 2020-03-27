@@ -36,8 +36,9 @@ export default class DeviceStore {
     getAll(options: ISearchOpt) {
         return knex.raw(`SELECT *
             FROM devices
-            WHERE description LIKE '%${options.needle}%'
-            OR edge_interface_name LIKE '%${options.needle}%'
+            WHERE mac_address LIKE '%${options.needle}%'
+            OR dns_name_auto LIKE '%${options.needle}%'
+            OR dns_name_manual LIKE '%${options.needle}%'
             ORDER BY created_at DESC
             LIMIT ${options.itemsPerPage}
             OFFSET ${(options.itemsPerPage * (options.activePage - 1))}`

@@ -44,6 +44,15 @@ export const appRoutes: ApplicationRouteGroup[] = [
                 showTopbar: true
             },
             {
+                path: '/device/new',
+                name: 'device',
+                restricted: false,
+                exact: true,
+                component: DNSForm,
+                menuLabel: 'device',
+                showTopbar: true
+            },
+            {
                 path: '/home',
                 name: 'home',
                 restricted: false,
