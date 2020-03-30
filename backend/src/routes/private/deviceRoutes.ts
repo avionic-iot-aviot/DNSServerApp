@@ -1,12 +1,14 @@
 import * as express from 'express';
 import * as HttpStatus from 'http-status-codes';
 import DeviceStore from '../../stores/deviceStore';
+import DNSService from '../../services/dnsService';
 
 import { IDevice, ISearchOpt } from '../../interfaces/interfaces';
 const _ = require('lodash');
 const factory = require('../../shared/factory');
 const router = express.Router();
 const deviceStore = new DeviceStore();
+const dnsService = new DNSService();
 
 router.get(
     '/', async (
@@ -16,6 +18,7 @@ router.get(
     ) => {
     const device_id = req.query.id;
     try {
+        // verifica esistenza device
         const deviceResponse = await deviceStore.findById(device_id);
         if (deviceResponse && deviceResponse.length == 1) {
             const device = deviceResponse[0];
@@ -43,12 +46,12 @@ router.get(
     try {
         const options = req.query.options;
         const search = req.query.search;
+        // creazione oggetto di tipo ISearchOpt per la gestione della ricerca e della paginazione
         let searchOptions: ISearchOpt = options ? JSON.parse(options) : {};
         searchOptions.itemsPerPage = searchOptions.itemsPerPage || 25;
         searchOptions.activePage = searchOptions.activePage || 1;
         searchOptions.needle = search || "";
         const devicesRes = await deviceStore.getAll(searchOptions);
-
 
         if (devicesRes && devicesRes.length > 0) {
             const result = factory.generateSuccessResponse(
@@ -84,7 +87,9 @@ router.post('/create', async (req, res, next) => {
         if (!devices || devices.length == 0) {
             const resCreation = await deviceStore.create(device);
             if (resCreation && resCreation.length == 1) {
-                message = 'Device successfully created'
+                message = 'Device successfully created';
+                //creazione file per le configurazioni (hosts) di dnsmasq
+                dnsService.searchAndSaveNewLeases();
                 const result = factory.generateSuccessResponse(null, null, message);
                 res.status(HttpStatus.OK).json(result);
             } else {
@@ -118,6 +123,8 @@ router.put('/update', async (req, res, next) => {
         if (devices.length == 1) {
             const resUpdate = await deviceStore.update(device);
             if (resUpdate) {
+                //creazione file per le configurazioni (hosts) di dnsmasq
+                dnsService.searchAndSaveNewLeases();
                 message = 'Device successfully updated'
                 const result = factory.generateSuccessResponse(null, null, message);
                 res.status(HttpStatus.OK).json(result);

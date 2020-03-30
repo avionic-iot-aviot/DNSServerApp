@@ -17,16 +17,23 @@ export default class PingService {
 
     async execute() {
         try {
+            // recupero dati dall'arpTable
             const arpData = await this.getElementsFromArpTable();
             console.log("arpData", arpData);
             if (arpData) {
+                // verifica se i dati dell'arpTable sono identici a quelli precedenti
                 const comparation = await this.compareOldAndNewObject(arpData);
                 console.log("comparation", comparation);
+                // salvataggio nuovi dati dell'arpTable, necessari per la comparazione al successivo ciclo di esecuzione 
                 Utilities.writeFile(cfg.arp.check_file, JSON.stringify(arpData));
+                // se i dati dell'arp table sono cambiati verranno effettuate delle operazioni
                 if (!comparation) {
+                    // verranno inviati gli Ip degli hosts ai gateway
+                    // il metodo ritornerà i dati dei gateway a cui è stato possibile effettuare la richiesta (i gateway vivi)
                     const contactedGW = this.contactGW(arpData);
                     if (contactedGW) {
                         const gwMacs = contactedGW;
+                        // inserimento informazioni dei Gateway e degli hosts nella tabella devices
                         this.addInfoGWAndTenantToDevices(arpData, gwMacs);
                     }
                 }
@@ -112,7 +119,7 @@ export default class PingService {
             });
         }
     }
-
+// recupero dati dell'arp table storati in un file
     async getObjectFromFile() {
         try {
             if (fs.existsSync(cfg.arp.check_file)) {
@@ -126,6 +133,7 @@ export default class PingService {
         }
     }
 
+    // comparazione vecchi dati dell'arp table con i nuovi dati
     async compareOldAndNewObject(newObject: any) {
         let areEqual: boolean = false;
         const oldObjectStringified = await this.getObjectFromFile();

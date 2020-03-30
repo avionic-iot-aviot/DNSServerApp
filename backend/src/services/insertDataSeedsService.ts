@@ -9,10 +9,13 @@ const envFilename = path.join(
 dotenv.config({ path: envFilename });
 
 import RoleStore from '../stores/roleStore';
+import TenantStore from '../stores/tenantStore';
+
 import UserStore from '../stores/userStore';
 import { role } from '../shared/constants';
-import { IRole, IUser } from '../interfaces/interfaces';
+import { IRole, IUser, ITenant } from '../interfaces/interfaces';
 const roleStore = new RoleStore();
+const tenantStore = new TenantStore();
 const userStore = new UserStore();
 
 export default class InsertDataSeedsService {
@@ -58,13 +61,28 @@ export default class InsertDataSeedsService {
                 if (userRes && userRes.length == 0) {
                     user.role_id = roleRes[0].id,
                         user.email = process.env.EMAIL_SUPER_ADMIN,
-                        user.password = process.env.PASSWORD_SUPER_ADMIN; await userStore.create(user);
+                        user.password = process.env.PASSWORD_SUPER_ADMIN;
+                    await userStore.create(user);
                 }
             }
         } catch (error) {
             console.log("ERROR addUserSuperAdmin", error);
         }
 
+    }
+
+    async addTenant() {
+        try {
+            const tenant: ITenant = {
+                edge_interface_name: cfg.default_tenant
+            }
+            const tenantRes = tenantStore.findBy(tenant);
+            if (tenantRes && tenantRes.length == 0) {
+                await tenantStore.create(tenant);
+            }
+        } catch (error) {
+
+        }
     }
 
 }

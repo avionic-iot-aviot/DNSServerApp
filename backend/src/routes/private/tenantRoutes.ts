@@ -43,13 +43,12 @@ router.get(
     try {
         const options = req.query.options;
         const search = req.query.search;
+        // creazione oggetto di tipo ISearchOpt per la gestione della ricerca e della paginazione
         let searchOptions: ISearchOpt = options ? JSON.parse(options) : {};
         searchOptions.itemsPerPage = searchOptions.itemsPerPage || 25;
         searchOptions.activePage = searchOptions.activePage || 1;
         searchOptions.needle = search || "";
         const tenantsRes = await tenantStore.getAll(searchOptions);
-
-
         if (tenantsRes && tenantsRes.length > 0) {
             const result = factory.generateSuccessResponse(
                 {tenants: tenantsRes, options: searchOptions},

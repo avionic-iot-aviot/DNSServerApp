@@ -5,4 +5,5 @@ const insertDataSeedsService = new InsertDataSeedsService();
 
 insertDataSeedsService.addRoles().then(() => {
     insertDataSeedsService.addUserSuperAdmin();
+    insertDataSeedsService.addTenant();
 })
