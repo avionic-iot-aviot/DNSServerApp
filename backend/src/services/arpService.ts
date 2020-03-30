@@ -294,6 +294,7 @@ export default class PingService {
                 // This will run after the last step is done
                 console.log("Done!")
                 console.log(result);
+                console.log("contacted", contacted);
             });
         } catch (error) {
             console.log("ERROR contact GW", error);
