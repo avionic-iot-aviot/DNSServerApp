@@ -239,7 +239,7 @@ export default class PingService {
     async contactGW(table: any) {
         try {
             let promises: any = [];
-            let contacted: any = {};
+            // let contacted: any = {};
             let toContact: any = [];
 
             if (table) {
@@ -286,15 +286,23 @@ export default class PingService {
             return await PromiseBB.mapSeries(promises, function (requestRes: any, index: number, arrayLength: number) {
                 console.log("requestRes", requestRes);
                 if (requestRes && requestRes.success) {
-                    if ((contacted.length - 1) < index) {
-                        contacted[toContact[index].key] = toContact[index].ip;
-                    }
+                    // if ((contacted.length - 1) < index) {
+                    return toContact[index];
+                    // }
                 }
             }).then(function (result: any) {
                 // This will run after the last step is done
                 console.log("Done!")
                 console.log(result);
-                console.log("contacted", contacted);
+                if (result) {
+                    let contacted: any = {};
+                    result.map((value: any) => {
+                        if (value && value.key && value.ip) {
+                            contacted[value.key] = value.ip;
+                        }
+                    });
+                    return contacted;
+                }
             });
         } catch (error) {
             console.log("ERROR contact GW", error);
