@@ -76,7 +76,7 @@ export default class InsertDataSeedsService {
             const tenant: ITenant = {
                 edge_interface_name: cfg.default_tenant
             }
-            const tenantRes = tenantStore.findBy(tenant);
+            const tenantRes = await tenantStore.findBy(tenant);
             if (tenantRes && tenantRes.length == 0) {
                 await tenantStore.create(tenant);
             }

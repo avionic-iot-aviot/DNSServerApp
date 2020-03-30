@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 import ArpService from '../services/arpService';
 const arpService = new ArpService();
+import DNSService from '../services/dnsService';
+const dnsService = new DNSService();
 const cfg = require('config');
 const leases = require('dnsmasq-leases');
 let tmpDirectory = path.join(__dirname, '../../src/test.txt');
@@ -29,6 +31,8 @@ fs.watchFile(tmpDirectoryLeases, (curr: any, prev: any) => {
     );
     let data = fs.readFileSync(tmpDirectoryLeases, 'utf8');
     console.log("LEASES", leases(data));
+    dnsService.searchAndSaveNewLeases();
+
 });
 
 

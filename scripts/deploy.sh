@@ -1,12 +1,14 @@
 PROJECT_FOLDER="$DNSServerApp"
 DB_NAME="$staging.sqlite3"
-
+ENV_FILE="$.env.staging"
 if [ ! -d $PROJECT_FOLDER ] ; then
 echo 'NOT Exists'
 else
 echo 'Already Exists'
 pm2 stop dnsserverapp
-mv ~/DNSServerApp/backend/src/db/staging.sqlite3 ~/$DB_NAME
+mv ~/DNSServerApp/backend/src/db/staging.sqlite3 ~/staging.sqlite3
+mv ~/DNSServerApp/backend/env/.env.staging ~/.env.staging
+
 sudo rm -rf ~/DNSServerApp
 fi
 
@@ -23,14 +25,24 @@ npm run be:build
 cd ~/DNSServerApp/frontend
 npm install
 npm run build
-cd ~/DNSServerApp/backend
-if [ -f $DB_NAME ] ; then
+
+
+
+cd ~/
+if [ -f staging.sqlite3 ] ; then
 echo 'Move DB'
-mv ~/$DB_NAME ~/DNSServerApp/backend/src/db/staging.sqlite3
+mv ~/staging.sqlite3 ~/DNSServerApp/backend/src/db/staging.sqlite3
 fi
 
+
+mv ~/.env.staging ~/DNSServerApp/backend/env/.env.staging
+
+cd ~/DNSServerApp/backend;
+NODE_ENV=staging pm2 start dist/main.js --name "dnsserverapp" && cd ~/ && pm2 startup > pm2_startup_output;
+tail -n 1 pm2_startup_output > pm2_startup.sh && chmod u+rwx pm2_startup.sh && ./pm2_startup.sh && pm2 save
+
+cd ~/DNSServerApp/backend;
 echo 'Migration'
 NODE_ENV=staging knex migrate:latest
 NODE_ENV=staging npm run execute:seeds
-NODE_ENV=staging pm2 start dist/main.js --name "dnsserverapp" && cd ~/ && pm2 startup > pm2_startup_output;
-tail -n 1 pm2_startup_output > pm2_startup.sh && chmod u+rwx pm2_startup.sh && ./pm2_startup.sh && pm2 save
+

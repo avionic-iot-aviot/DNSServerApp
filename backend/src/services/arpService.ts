@@ -12,6 +12,7 @@ import DNSService from './dnsService';
 const dnsService = new DNSService();
 import DeviceStore from '../stores/deviceStore';
 const deviceStore = new DeviceStore();
+const PromiseBB = require('bluebird');
 
 export default class PingService {
 
@@ -30,7 +31,7 @@ export default class PingService {
                 if (!comparation) {
                     // verranno inviati gli Ip degli hosts ai gateway
                     // il metodo ritornerà i dati dei gateway a cui è stato possibile effettuare la richiesta (i gateway vivi)
-                    const contactedGW = this.contactGW(arpData);
+                    const contactedGW = await this.contactGW(arpData);
                     if (contactedGW) {
                         const gwMacs = contactedGW;
                         // inserimento informazioni dei Gateway e degli hosts nella tabella devices
@@ -75,6 +76,8 @@ export default class PingService {
                                     gwInterface.id = gwRes[0].id;
                                     // verificare result update
                                     const updateRes = await deviceStore.update(gwInterface);
+                                    console.log("updateRes", updateRes);
+
                                     if (updateRes) {
                                         currentGWId = updateRes[0];
                                     }
@@ -119,7 +122,7 @@ export default class PingService {
             });
         }
     }
-// recupero dati dell'arp table storati in un file
+    // recupero dati dell'arp table storati in un file
     async getObjectFromFile() {
         try {
             if (fs.existsSync(cfg.arp.check_file)) {
@@ -187,7 +190,7 @@ export default class PingService {
     // data la mappa contenenet tutti gli IP raggruppati per MAC Address
     // si proverà a fare una richiesta su ogni IP, al fine di inviare all'indirizzo del GW
     // che sta in ascolto tutti gli IP che afferiscono allo stesso MAC address
-    async contactGW(table: any) {
+    async contactGW1(table: any) {
         try {
             let contacted: any = {};
             if (table) {
@@ -197,7 +200,10 @@ export default class PingService {
                         await Object.keys(mac_addresses).forEach(async (key: string) => {
                             const ipaddrs: string[] = mac_addresses[key];
                             // if (ipaddrs.length > 1) {
+                            let contacted: any = {};
                             await ipaddrs.forEach(async (ip: string) => {
+
+
                                 let upaddrsToSend = ipaddrs.slice(0);
                                 _.remove(upaddrsToSend, (n: string) => {
                                     return n == ip
@@ -217,11 +223,71 @@ export default class PingService {
                                     contacted[key] = ip;
                                 }
                             });
+
+
                             // }
                         });
                     }
                 });
             }
+            return contacted;
+        } catch (error) {
+            console.log("ERROR contact GW", error);
+        }
+    }
+
+    async contactGW(table: any) {
+        try {
+            let promises: any = [];
+            let contacted: any = {};
+            if (table) {
+                await Object.keys(table).forEach(async (interfaceKey: string) => {
+                    const mac_addresses = table[interfaceKey].mac_addresses;
+                    if (mac_addresses && Object.keys(mac_addresses).length > 0) {
+                        await Object.keys(mac_addresses).forEach(async (key: string) => {
+                            const ipaddrs: string[] = mac_addresses[key];
+                            // if (ipaddrs.length > 1) {
+                            await ipaddrs.forEach(async (ip: string) => {
+
+
+                                let upaddrsToSend = ipaddrs.slice(0);
+                                _.remove(upaddrsToSend, (n: string) => {
+                                    return n == ip
+                                });
+                                let request_data = {
+                                    url: `http://${ip}:3800/ping`,
+                                    method: 'POST',
+                                    body: {
+                                        params: {
+                                            ips: upaddrsToSend
+                                        }
+                                    },
+                                    json: true
+                                };
+                                const requestRes = Utilities.request(request_data);
+                                promises.push(requestRes);
+                                // if (requestRes && requestRes.success) {
+
+                                //     contacted[key] = ip;
+                                // }
+
+                            });
+
+                            // }
+                        });
+                    }
+                });
+            }
+
+
+            PromiseBB.mapSeries(promises, function (requestRes: any, index: number, arrayLength: number) {
+               console.log("requestRes", requestRes);
+            }).then(function (result: any) {
+                // This will run after the last step is done
+                console.log("Done!")
+                console.log(result); // ["1.txt!", "2.txt!", "3.txt!", "4.txt!", "5.txt!"]
+            });
+            // return promise;
             return contacted;
         } catch (error) {
             console.log("ERROR contact GW", error);
