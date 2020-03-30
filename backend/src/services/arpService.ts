@@ -240,6 +240,8 @@ export default class PingService {
         try {
             let promises: any = [];
             let contacted: any = {};
+            let toContact: any = [];
+
             if (table) {
                 await Object.keys(table).forEach(async (interfaceKey: string) => {
                     const mac_addresses = table[interfaceKey].mac_addresses;
@@ -266,6 +268,7 @@ export default class PingService {
                                 };
                                 const requestRes = Utilities.request(request_data);
                                 promises.push(requestRes);
+                                toContact.push({ key, ip });
                                 // if (requestRes && requestRes.success) {
 
                                 //     contacted[key] = ip;
@@ -280,15 +283,18 @@ export default class PingService {
             }
 
 
-            PromiseBB.mapSeries(promises, function (requestRes: any, index: number, arrayLength: number) {
-               console.log("requestRes", requestRes);
+            return await PromiseBB.mapSeries(promises, function (requestRes: any, index: number, arrayLength: number) {
+                console.log("requestRes", requestRes);
+                if (requestRes && requestRes.success) {
+                    if ((contacted.length - 1) < index) {
+                        contacted[toContact[index].key] = toContact[index].ip;
+                    }
+                }
             }).then(function (result: any) {
                 // This will run after the last step is done
                 console.log("Done!")
-                console.log(result); // ["1.txt!", "2.txt!", "3.txt!", "4.txt!", "5.txt!"]
+                console.log(result);
             });
-            // return promise;
-            return contacted;
         } catch (error) {
             console.log("ERROR contact GW", error);
         }
