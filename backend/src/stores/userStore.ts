@@ -33,14 +33,14 @@ export default class UserStore {
 
     findBy(user: IUser, without_password: boolean = true): any {
         if (without_password) {
-            return knex('users').select(['id', 'email', 'created_at', 'updated_at']).where(user);
+            return knex('users').select('*').where(user);
         } else {
             return knex('users').where(user);
         }
     }
 
     findById(id: number): any {
-        return knex('users').select(['id', 'email', 'created_at', 'updated_at']).where({ id });
+        return knex('users').select('*').where({ id });
     }
 
     findUser(id: number): any {
