@@ -1,10 +1,21 @@
 PROJECT_FOLDER="$DNSServerApp"
-if [ ! -d PROJECT_FOLDER ] ; then
-    git clone https://github.com/avionic-iot-aviot/DNSServerApp.git
-    
+DB_NAME="$staging.sqlite3"
+
+if [ ! -d $PROJECT_FOLDER ] ; then
+echo 'NOT Exists'
 else
 echo 'Already Exists'
+pm2 stop dnsserverapp
+mv ~/DNSServerApp/backend/src/db/staging.sqlite3 ~/$DB_NAME
+sudo rm -rf ~/DNSServerApp
 fi
+
+git clone https://github.com/avionic-iot-aviot/DNSServerApp.git
+cd ~/
+if [ -f $DB_NAME ] ; then
+mv ~/$DB_NAME ~/DNSServerApp/backend/src/db/staging.sqlite3
+fi
+
 cd ~/DNSServerApp/frontend;
 npm install
 npm run build
