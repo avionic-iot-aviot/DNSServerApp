@@ -11,7 +11,8 @@ export default class DNSService {
 
     // il metodo aggiunge nella tabella devices tutti i nuovi MAC_address presenti nel file delle leases
     // e crea il file host che servirà a dnsmasq per poter risolvere gli hostname dei GW e degli hosts 
-    // collegati al GW
+    // collegati al GW. Il file viene cancellato e ricreato ex-novo ogni volta a partire dal contenuto delle leases,
+    // arricchite con il dns_name_manual preso dal DB
     async searchAndSaveNewLeases() {
         try {
             let prepareFileHost = "";
@@ -41,6 +42,8 @@ export default class DNSService {
                             devicePersistent = deviceRes[0];
                         }
                         if (devicePersistent) {
+                            // dns_name è uguale = al nome DNS inserito dall'utente mediante il form (se esiste)
+                            // altrimenti è uguale al nome DNS presente nel file delle leases la prima volta che il record viene aggiunto tra le leases
                             let dns_name = devicePersistent.dns_name_manual && devicePersistent.dns_name_manual != "" ? devicePersistent.dns_name_manual : devicePersistent.dns_name_auto;
                             prepareFileHost = prepareFileHost + `${val.ip} ${dns_name}\n`;
                         }

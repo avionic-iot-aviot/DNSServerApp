@@ -34,7 +34,7 @@ export default class PingService {
                     const contactedGW = await this.contactGW(arpData);
                     if (contactedGW) {
                         const gwMacs = contactedGW;
-                        // inserimento informazioni dei Gateway e degli hosts nella tabella devices
+                        // inserimento informazioni dei Gateway vivi e degli hosts nella tabella devices
                         this.addInfoGWAndTenantToDevices(arpData, gwMacs);
                     }
                 }
@@ -53,6 +53,8 @@ export default class PingService {
                 console.log("interfaceKey", interfaceKey);
                 const mac_addresses = arpData[interfaceKey].mac_addresses;
                 if (mac_addresses && Object.keys(mac_addresses).length > 0) {
+                    // cerca l'interfaccia tra i tenant, se esiste allora continua,
+                    // altrimenti non fa alcuna operazione per questa interfaccia
                     let tenantRes = await tenantStore.findBy({ edge_interface_name: interfaceKey });
                     if (tenantRes && tenantRes.length == 1) {
                         const tenant = tenantRes[0];
@@ -61,7 +63,7 @@ export default class PingService {
                         let currentGWId: number = null;
                         await Object.keys(mac_addresses).forEach(async (key: string) => {
                             console.log("mac_address", key);
-
+                            // verifica se il mac address (key) è incluso nei MAC_ADDRESS dei gateway vivi
                             if (gwMacs.includes(key)) {
                                 let gwInterface: IDevice = {
                                     mac_address: key,
@@ -81,7 +83,7 @@ export default class PingService {
                                     console.log("updateRes", updateRes);
 
                                     if (updateRes) {
-                                        currentGWId = updateRes[0];
+                                        currentGWId = updateRes;
                                     }
                                     // currentGW = gwRes[0];
                                 } else {
@@ -89,16 +91,17 @@ export default class PingService {
                                     const createRes = await deviceStore.create(gwInterface);
                                     console.log("createRes", createRes);
                                     if (createRes) {
-                                        currentGWId = createRes[0];
+                                        currentGWId = createRes;
                                     }
                                 }
-                                // }
+                                // gestione degli hosts relativi al Gateway aggiornato mediante il codice sopra
                                 const ipaddrs: string[] = mac_addresses[key];
                                 await ipaddrs.forEach(async (ip: string) => {
                                     console.log("IP 2 FEach", ip);
                                     console.log("contactedGW[key]", contactedGW[key]);
 
-                                    // se IP non è quello del Gateway
+                                    // se IP non è quello del Gateway significa che è un host, quindi si può procedere
+                                    // con l'aggiunta delel informazioni mancanti
                                     if (ip != contactedGW[key]) {
                                         console.log("INSIDE");
 
@@ -198,52 +201,6 @@ export default class PingService {
     // data la mappa contenenet tutti gli IP raggruppati per MAC Address
     // si proverà a fare una richiesta su ogni IP, al fine di inviare all'indirizzo del GW
     // che sta in ascolto tutti gli IP che afferiscono allo stesso MAC address
-    async contactGW1(table: any) {
-        try {
-            let contacted: any = {};
-            if (table) {
-                await Object.keys(table).forEach(async (interfaceKey: string) => {
-                    const mac_addresses = table[interfaceKey].mac_addresses;
-                    if (mac_addresses && Object.keys(mac_addresses).length > 0) {
-                        await Object.keys(mac_addresses).forEach(async (key: string) => {
-                            const ipaddrs: string[] = mac_addresses[key];
-                            // if (ipaddrs.length > 1) {
-                            let contacted: any = {};
-                            await ipaddrs.forEach(async (ip: string) => {
-
-
-                                let upaddrsToSend = ipaddrs.slice(0);
-                                _.remove(upaddrsToSend, (n: string) => {
-                                    return n == ip
-                                });
-                                let request_data = {
-                                    url: `http://${ip}:3800/ping`,
-                                    method: 'POST',
-                                    body: {
-                                        params: {
-                                            ips: upaddrsToSend
-                                        }
-                                    },
-                                    json: true
-                                };
-                                const requestRes = await Utilities.request(request_data);
-                                if (requestRes && requestRes.success) {
-                                    contacted[key] = ip;
-                                }
-                            });
-
-
-                            // }
-                        });
-                    }
-                });
-            }
-            return contacted;
-        } catch (error) {
-            console.log("ERROR contact GW", error);
-        }
-    }
-
     async contactGW(table: any) {
         try {
             let promises: any = [];
@@ -290,7 +247,7 @@ export default class PingService {
                 });
             }
 
-
+            // in questo modo il metodo ritorna al chiamante solo quando tutte le richieste sono state completate
             return await PromiseBB.mapSeries(promises, function (requestRes: any, index: number, arrayLength: number) {
                 console.log("requestRes", requestRes);
                 if (requestRes && requestRes.success) {

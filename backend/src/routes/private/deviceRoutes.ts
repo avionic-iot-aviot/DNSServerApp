@@ -88,7 +88,7 @@ router.post('/create', async (req, res, next) => {
             const resCreation = await deviceStore.create(device);
             if (resCreation && resCreation.length == 1) {
                 message = 'Device successfully created';
-                //creazione file per le configurazioni (hosts) di dnsmasq
+                //metodo per creazione file per le configurazioni (hosts) di dnsmasq
                 dnsService.searchAndSaveNewLeases();
                 const result = factory.generateSuccessResponse(null, null, message);
                 res.status(HttpStatus.OK).json(result);
@@ -123,7 +123,7 @@ router.put('/update', async (req, res, next) => {
         if (devices.length == 1) {
             const resUpdate = await deviceStore.update(device);
             if (resUpdate) {
-                //creazione file per le configurazioni (hosts) di dnsmasq
+                //metodo per creazione file per le configurazioni (hosts) di dnsmasq
                 dnsService.searchAndSaveNewLeases();
                 message = 'Device successfully updated'
                 const result = factory.generateSuccessResponse(null, null, message);
