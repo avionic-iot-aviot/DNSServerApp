@@ -116,7 +116,7 @@ class DeviceForm extends DNSBaseComponent<CompProps | any, CompState> {
                         this.props.dispatchNotification('Creation successfully done', 'success', Math.random());
                     } else if (responseCreate.data.message === 'Device already exists') {
                         this.props.dispatchNotification('Creation successfully done', 'warning', Math.random());
-                    } if (responseCreate.data.message === 'Device successfully updated') {
+                    } else if (responseCreate.data.message === 'Device successfully updated') {
                         this.props.dispatchNotification('the change was successful', 'success', Math.random());
                     } else {
                         this.props.dispatchNotification(`Error creation.`, 'error', Math.random());

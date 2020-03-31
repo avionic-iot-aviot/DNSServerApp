@@ -16,6 +16,7 @@ class TopBar extends Component<any, CompState> {
 
   componentWillMount() {
     const user = authutils.getTokenPayload();
+    // bisogna gestire meglio ul menù
     if (user) {
       let activeItem = 'home';
 

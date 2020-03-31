@@ -162,6 +162,13 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
                     </Table.Cell>
                     <Table.Cell
                         className="truncate cellTable"
+                    >{device.dns_name_auto}
+                    </Table.Cell><Table.Cell
+                        className="truncate cellTable"
+                    >{device.tenant_id}
+                    </Table.Cell>
+                    <Table.Cell
+                        className="truncate cellTable"
                     >
 
 
@@ -239,6 +246,8 @@ class TenantTable extends DNSBaseComponent<CompProps | any, CompState> {
                                         <Table.Row>
                                             <Table.HeaderCell>Mac Address</Table.HeaderCell>
                                             <Table.HeaderCell>DNS Name Manual</Table.HeaderCell>
+                                            <Table.HeaderCell>DNS Name Auto</Table.HeaderCell>
+                                            <Table.HeaderCell>Tenant ID</Table.HeaderCell>
                                             <Table.HeaderCell>Actions</Table.HeaderCell>
 
                                         </Table.Row>

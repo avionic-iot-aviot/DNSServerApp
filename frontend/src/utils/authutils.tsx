@@ -2,8 +2,8 @@ import * as _ from 'lodash';
 import * as Constants from '../constants';
 import moment from 'moment';
 import TokenWatchdog from '../components/tokenwatchdog';
-// import * as UserActions from '../actions/userActions';
-// import * as store from '../store';
+import * as UserActions from '../actions/userActions';
+import * as store from '../store';
 
 class AuthUtils {
   getToken() {
@@ -77,11 +77,11 @@ class AuthUtils {
   }
 
   dispatchSetStoreFromToken() {
-    // store.default.dispatch(UserActions.setStoreFromToken());
+    store.default.dispatch(UserActions.setStoreFromToken());
   }
 
   dispatchLogoutUser() {
-    // store.default.dispatch(UserActions.logout());
+    store.default.dispatch(UserActions.logout());
   }
 }
 
