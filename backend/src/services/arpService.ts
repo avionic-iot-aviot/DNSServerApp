@@ -74,6 +74,8 @@ export default class PingService {
                                 // aggiunge o aggiorna il gateway nell DB (tabella devices)
                                 if (gwRes && gwRes.length == 1) {
                                     gwInterface.id = gwRes[0].id;
+                                    gwInterface.gw_id = gwRes[0].id;
+
                                     // verificare result update
                                     const updateRes = await deviceStore.update(gwInterface);
                                     console.log("updateRes", updateRes);
@@ -90,12 +92,16 @@ export default class PingService {
                                         currentGWId = createRes[0];
                                     }
                                 }
-                                return;
                                 // }
                                 const ipaddrs: string[] = mac_addresses[key];
                                 await ipaddrs.forEach(async (ip: string) => {
+                                    console.log("IP 2 FEach", ip);
+                                    console.log("contactedGW[key]", contactedGW[key]);
+
                                     // se IP non è quello del Gateway
                                     if (ip != contactedGW[key]) {
+                                        console.log("INSIDE");
+
                                         const currentLeases = leases.filter((val: ILease) => val.ip == ip);
                                         if (currentLeases && currentLeases.length == 1) {
                                             const currentLease: ILease = currentLeases[0];
@@ -108,6 +114,8 @@ export default class PingService {
                                             device.gw_id = currentGWId;
                                             if (deviceRes && deviceRes.length == 1) {
                                                 device.id = deviceRes[0].id;
+                                                console.log("PRE UPDATE", device);
+
                                                 await deviceStore.update(device);
                                             } else {
                                                 await deviceStore.create(device);
@@ -286,7 +294,7 @@ export default class PingService {
             return await PromiseBB.mapSeries(promises, function (requestRes: any, index: number, arrayLength: number) {
                 console.log("requestRes", requestRes);
                 if (requestRes && requestRes.success) {
-                    // if ((contacted.length - 1) < index) {
+                    // if ((toContact.length - 1) < index) {
                     return toContact[index];
                     // }
                 }
