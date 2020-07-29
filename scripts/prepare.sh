@@ -6,7 +6,7 @@ sudo apt-get -y install build-essential libssl-dev
 sudo apt-get -y install net-tools
 sudo apt-get -y install xz-utils
 sudo apt-get -y npm
-git clone https://github.com/ntop/n2n.git
+git clone --single-branch --branch 2.6-stable https://github.com/ntop/n2n.git
 mv n2n ~/n2n
 cd ~/n2n
 ./autogen.sh
