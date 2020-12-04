@@ -2,41 +2,34 @@ const config = require("config");
 const path = require("path");
 
 module.exports = {
+  
   development: {
-    client: "sqlite3",
+    client: 'mysql',
     connection: {
-      filename: path.resolve(__dirname) + "/src/db/dev.sqlite3"
-    },
-    // seeds: {
-    //   directory: path.resolve(__dirname) + "/src/db/seeds/development"
-    // },
-    migrations: {
-      tableName: "migrations",
-      directory: path.resolve(__dirname) + "/src/db/migrations"
-    },
-    useNullAsDefault: true
+        host: config.general.ipIpDb,
+        user: 'aviotuser',
+        password: 'CNDqbHS7P2yS',
+        database: 'Aviot'
+    }
   },
+  
   staging: {
-    client: "sqlite3",
+    client: 'mysql',
     connection: {
-      filename: path.resolve(__dirname) + "/src/db/staging.sqlite3"
-    },
-    migrations: {
-      tableName: "migrations",
-      directory: path.resolve(__dirname) + "/src/db/migrations"
-    },
-    useNullAsDefault: true
+        host: config.general.ipIpDb,
+        user: 'aviotuser',
+        password: 'CNDqbHS7P2yS',
+        database: 'Aviot'
+    }
   },
 
   production: {
-    client: "sqlite3",
+    client: 'mysql',
     connection: {
-      filename: path.resolve(__dirname) + "/src/db/production.sqlite3"
-    },
-    migrations: {
-      tableName: "migrations",
-      directory: path.resolve(__dirname) + "/src/db/migrations"
-    },
-    useNullAsDefault: true
+        host: config.general.ipIpDb,
+        user: 'aviotuser',
+        password: 'CNDqbHS7P2yS',
+        database: 'Aviot'
+    }
   }
 };

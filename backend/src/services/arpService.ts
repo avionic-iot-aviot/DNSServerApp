@@ -1,42 +1,26 @@
-
 const arp1 = require('arp-a');
 const cfg = require('config');
 const equal = require('deep-equal');
 const fs = require('fs');
 import { Utilities } from '../shared/utilities';
 import _ = require('lodash');
-import TenantStore from '../stores/tenantStore';
-const tenantStore = new TenantStore();
-import { ITenant, ILease, IDevice } from '../interfaces/interfaces';
-import DNSService from './dnsService';
-const dnsService = new DNSService();
-import DeviceStore from '../stores/deviceStore';
-const deviceStore = new DeviceStore();
-const PromiseBB = require('bluebird');
 
 export default class PingService {
 
     async execute() {
         try {
-            // recupero dati dall'arpTable
             const arpData = await this.getElementsFromArpTable();
             console.log("arpData", arpData);
+            console.log("PING: Controllo ARP table -->", arpData)
             if (arpData) {
-                // verifica se i dati dell'arpTable sono identici a quelli precedenti
                 const comparation = await this.compareOldAndNewObject(arpData);
                 console.log("comparation", comparation);
-                // salvataggio nuovi dati dell'arpTable, necessari per la comparazione al successivo ciclo di esecuzione 
-                Utilities.writeFile(cfg.arp.check_file, JSON.stringify(arpData));
-                // se i dati dell'arp table sono cambiati verranno effettuate delle operazioni
+                await this.saveObjectInFile(JSON.stringify(arpData));
+                console.log("PING: Verifico il se l'oggetto è cambiato -->",comparation);
+                //this.contactGW(arpData); // lo fa sempre
                 if (!comparation) {
-                    // verranno inviati gli Ip degli hosts ai gateway
-                    // il metodo ritornerà i dati dei gateway a cui è stato possibile effettuare la richiesta (i gateway vivi)
-                    const contactedGW = await this.contactGW(arpData);
-                    if (contactedGW) {
-                        const gwMacs = contactedGW;
-                        // inserimento informazioni dei Gateway vivi e degli hosts nella tabella devices
-                        this.addInfoGWAndTenantToDevices(arpData, gwMacs);
-                    }
+                    console.log("PING: Contatto il Gateway")
+                    this.contactGW(arpData);
                 }
             }
         } catch (error) {
@@ -44,100 +28,17 @@ export default class PingService {
         }
     }
 
-    async addInfoGWAndTenantToDevices(arpData: any, contactedGW: any) {
-        // MAC address dei gateway che sono stati contattati
-        const gwMacs = Object.keys(contactedGW);
-        const leases = Utilities.getCurrentLeases();
-        if (arpData) {
-            await Object.keys(arpData).forEach(async (interfaceKey: string) => {
-                console.log("interfaceKey", interfaceKey);
-                const mac_addresses = arpData[interfaceKey].mac_addresses;
-                if (mac_addresses && Object.keys(mac_addresses).length > 0) {
-                    // cerca l'interfaccia tra i tenant, se esiste allora continua,
-                    // altrimenti non fa alcuna operazione per questa interfaccia
-                    let tenantRes = await tenantStore.findBy({ edge_interface_name: interfaceKey });
-                    if (tenantRes && tenantRes.length == 1) {
-                        const tenant = tenantRes[0];
-                        console.log("tenant", tenant);
-
-                        let currentGWId: number = null;
-                        await Object.keys(mac_addresses).forEach(async (key: string) => {
-                            console.log("mac_address", key);
-                            // verifica se il mac address (key) è incluso nei MAC_ADDRESS dei gateway vivi
-                            if (gwMacs.includes(key)) {
-                                let gwInterface: IDevice = {
-                                    mac_address: key,
-                                    tenant_id: tenant.id
-                                };
-                                console.log("gwInterface Device", gwInterface);
-
-                                const gwRes = await deviceStore.findBy(gwInterface);
-                                gwInterface.is_gw = true;
-                                // aggiunge o aggiorna il gateway nell DB (tabella devices)
-                                if (gwRes && gwRes.length == 1) {
-                                    gwInterface.id = gwRes[0].id;
-                                    gwInterface.gw_id = gwRes[0].id;
-
-                                    // verificare result update
-                                    const updateRes = await deviceStore.update(gwInterface);
-                                    console.log("updateRes", updateRes);
-
-                                    if (updateRes) {
-                                        currentGWId = updateRes;
-                                    }
-                                    // currentGW = gwRes[0];
-                                } else {
-                                    // verificare result create
-                                    const createRes = await deviceStore.create(gwInterface);
-                                    console.log("createRes", createRes);
-                                    if (createRes) {
-                                        currentGWId = createRes;
-                                    }
-                                }
-                                // gestione degli hosts relativi al Gateway aggiornato mediante il codice sopra
-                                const ipaddrs: string[] = mac_addresses[key];
-                                await ipaddrs.forEach(async (ip: string) => {
-                                    console.log("IP 2 FEach", ip);
-                                    console.log("contactedGW[key]", contactedGW[key]);
-
-                                    // se IP non è quello del Gateway significa che è un host, quindi si può procedere
-                                    // con l'aggiunta delel informazioni mancanti
-                                    if (ip != contactedGW[key]) {
-                                        console.log("INSIDE");
-
-                                        const currentLeases = leases.filter((val: ILease) => val.ip == ip);
-                                        if (currentLeases && currentLeases.length == 1) {
-                                            const currentLease: ILease = currentLeases[0];
-                                            let device: IDevice = {
-                                                mac_address: currentLease.mac,
-                                                tenant_id: tenant.id
-                                            };
-                                            const deviceRes = await deviceStore.findBy(device);
-                                            device.is_gw = false;
-                                            device.gw_id = currentGWId;
-                                            if (deviceRes && deviceRes.length == 1) {
-                                                device.id = deviceRes[0].id;
-                                                console.log("PRE UPDATE", device);
-
-                                                await deviceStore.update(device);
-                                            } else {
-                                                await deviceStore.create(device);
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    }
-                }
-            });
-        }
+    saveObjectInFile(content: string) {
+        fs.writeFile("arp_object", content, function (err: any) {
+            if (err) console.log(err);
+            else console.log("file saved");
+        });
     }
-    // recupero dati dell'arp table storati in un file
+
     async getObjectFromFile() {
         try {
-            if (fs.existsSync(cfg.arp.check_file)) {
-                const content = await fs.readFileSync(cfg.arp.check_file, 'utf8');
+            if (fs.existsSync("arp_object")) {
+                const content = await fs.readFileSync("arp_object", 'utf8');
                 console.log("content", content);
                 return content;
             }
@@ -147,9 +48,8 @@ export default class PingService {
         }
     }
 
-    // comparazione vecchi dati dell'arp table con i nuovi dati
     async compareOldAndNewObject(newObject: any) {
-        let areEqual: boolean = false;
+        let areEqual = false;
         const oldObjectStringified = await this.getObjectFromFile();
         if (oldObjectStringified) {
             console.log("oldObjectStringified", oldObjectStringified);
@@ -157,42 +57,38 @@ export default class PingService {
 
             // equal = Object.is(newObjectStringified, oldObjectStringified)
             const oldObject = JSON.parse(oldObjectStringified);
-            areEqual = equal(newObject, oldObject);
+            areEqual = await equal(newObject, oldObject);
         }
         return areEqual;
     }
 
     // il metodo scansiona la tabella degli ARP
-    // seleziona le righe relative alle interfacce relative ai vari tenants
-    // ritorna una mappa contenente interfaces, MAC addresses e IPs
+    // seleziona le righe relative all'interfaccia indicata nel file di configurazione
+    // ritorna una mappa contenente MAC addresses e IPs
     async getElementsFromArpTable() {
         try {
-            const tenants = await tenantStore.findAll();
-            if (tenants) {
-                const tenantInterfaces = tenants.map((val: ITenant) => val.edge_interface_name);
-                // const tenantInterfaces: string[] = [cfg.arp.interface];
-                const promise = new Promise((resolve, reject) => {
-                    let tbl: any = {};
+            const promise = new Promise((resolve, reject) => {
+                let tbl: any = { mac_addresses: {} };
 
-                    arp1.table(function (err: any, entry: any) {
-                        if (!!err) return console.log('arp: ' + err.message);
-                        if (!entry) return;
-                        // console.log("(entry[cfg.arp.entry_interface]", (entry[cfg.arp.entry_interface]);
+                arp1.table(function (err: any, entry: any) {
+                    if (!!err) return console.log('arp: ' + err.message);
+                    if (!entry) return;
+                    // if (entry.ifname == cfg.arp.interface) {
+                    if (entry && entry[cfg.arp.entry_interface] && entry[cfg.arp.entry_interface] == cfg.arp.interface) {
 
-                        if (entry && entry[cfg.arp.entry_interface] && tenantInterfaces.includes(entry[cfg.arp.entry_interface])) {
-                            if (!tbl[entry[cfg.arp.entry_interface]]) tbl[entry[cfg.arp.entry_interface]] = { mac_addresses: {} };
-                            if (tbl[entry[cfg.arp.entry_interface]].mac_addresses[entry.mac]) {
-                                tbl[entry[cfg.arp.entry_interface]].mac_addresses[entry.mac].push(entry.ip);
-                            } else {
-                                tbl[entry[cfg.arp.entry_interface]].mac_addresses[entry.mac] = [entry.ip];
+                        if (tbl.mac_addresses[entry.mac]) {
+                            if (!tbl.mac_addresses[entry.mac].includes(entry.ip)) {
+                                tbl.mac_addresses[entry.mac].push(entry.ip);
                             }
+                        } else {
+                            tbl.mac_addresses[entry.mac] = [entry.ip];
                         }
-                        resolve(tbl);
+                    }
+                    resolve(tbl);
 
-                    });
                 });
-                return promise;
-            }
+            });
+            return promise;
         } catch (error) {
             console.log("ERRR", error);
         }
@@ -203,72 +99,32 @@ export default class PingService {
     // che sta in ascolto tutti gli IP che afferiscono allo stesso MAC address
     async contactGW(table: any) {
         try {
-            let promises: any = [];
-            // let contacted: any = {};
-            let toContact: any = [];
-
-            if (table) {
-                await Object.keys(table).forEach(async (interfaceKey: string) => {
-                    const mac_addresses = table[interfaceKey].mac_addresses;
-                    if (mac_addresses && Object.keys(mac_addresses).length > 0) {
-                        await Object.keys(mac_addresses).forEach(async (key: string) => {
-                            const ipaddrs: string[] = mac_addresses[key];
-                            // if (ipaddrs.length > 1) {
-                            await ipaddrs.forEach(async (ip: string) => {
-
-
-                                let upaddrsToSend = ipaddrs.slice(0);
-                                _.remove(upaddrsToSend, (n: string) => {
-                                    return n == ip
-                                });
-                                let request_data = {
-                                    url: `http://${ip}:3800/ping`,
-                                    method: 'POST',
-                                    body: {
-                                        params: {
-                                            ips: upaddrsToSend
-                                        }
-                                    },
-                                    json: true
-                                };
-                                const requestRes = Utilities.request(request_data);
-                                promises.push(requestRes);
-                                toContact.push({ key, ip });
-                                // if (requestRes && requestRes.success) {
-
-                                //     contacted[key] = ip;
-                                // }
-
+            if (table && table.mac_addresses && Object.keys(table.mac_addresses).length > 0) {
+                await Object.keys(table.mac_addresses).forEach(async (key: string) => {
+                    const ipaddrs: string[] = table.mac_addresses[key];
+                    if (ipaddrs.length > 1) {
+                        await ipaddrs.forEach(async (ip: string) => {
+                            let upaddrsToSend = ipaddrs.slice(0);
+                            _.remove(upaddrsToSend, (n: string) => {
+                                return n == ip
                             });
-
-                            // }
+                            console.log("PING: contatto -->",`http://${ip}:${cfg.general.portGwApp}/ping`);
+                            console.log("PING: invio -->",upaddrsToSend);
+                            let request_data = {
+                                url: `http://${ip}:${cfg.general.portGwApp}/ping`,
+                                method: 'POST',
+                                body: {
+                                    params: {
+                                        ips: upaddrsToSend
+                                    }
+                                },
+                                json: true
+                            };
+                            await Utilities.request(request_data);
                         });
                     }
                 });
             }
-
-            // in questo modo il metodo ritorna al chiamante solo quando tutte le richieste sono state completate
-            return await PromiseBB.mapSeries(promises, function (requestRes: any, index: number, arrayLength: number) {
-                console.log("requestRes", requestRes);
-                if (requestRes && requestRes.success) {
-                    // if ((toContact.length - 1) < index) {
-                    return toContact[index];
-                    // }
-                }
-            }).then(function (result: any) {
-                // This will run after the last step is done
-                console.log("Done!")
-                console.log(result);
-                if (result) {
-                    let contacted: any = {};
-                    result.map((value: any) => {
-                        if (value && value.key && value.ip) {
-                            contacted[value.key] = value.ip;
-                        }
-                    });
-                    return contacted;
-                }
-            });
         } catch (error) {
             console.log("ERROR contact GW", error);
         }

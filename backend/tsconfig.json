@@ -3,7 +3,7 @@
         "module": "commonjs",
         "lib": ["es6", "dom", "es2017"],
         "target": "es6",
-        "noImplicitAny": true,
+        "noImplicitAny": false,
         "sourceMap": true,
         "outDir": "dist",
         "sourceRoot": "src",

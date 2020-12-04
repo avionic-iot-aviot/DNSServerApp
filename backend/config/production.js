@@ -11,4 +11,7 @@ module.exports = {
     path_to_watch: "/proc/net/arp",
     leases_path: "/var/lib/misc/dnsmasq.leases"
   },
+  general: {
+    ipDnsServer: process.env.IPDNSSERVER
+  }
 };
