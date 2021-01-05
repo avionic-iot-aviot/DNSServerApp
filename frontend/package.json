@@ -8,7 +8,7 @@
     "watch": "webpack --display-error-details --display-reasons --colors --watch"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bluebird": "^3.7.2",
     "css-loader": "^3.4.2",
     "history": "^4.10.1",
