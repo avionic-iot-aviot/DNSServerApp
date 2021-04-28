@@ -1,8 +1,11 @@
-PROJECT_FOLDER="DNSServerApp"
+#Setting the iptables masquerade
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
-echo 'Scarico da Github'
-rm -rf $PROJECT_FOLDER
-git clone https://github.com/avionic-iot-aviot/DNSServerApp
+#PROJECT_FOLDER="DNSServerApp"
+
+#echo 'Scarico da Github'
+#rm -rf $PROJECT_FOLDER
+#git clone https://github.com/avionic-iot-aviot/DNSServerApp
 
 echo 'Avvio di deploy'
 
