@@ -1,6 +1,10 @@
 #Setting the iptables masquerade
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
+#Setup dnsmasq server
+echo "$N2N_IP_DNSSERVERAPP dhcpserver.$TENANT_ID" >> /etc/hosts;
+dnsmasq --bind-interfaces --listen-address=$N2N_IP_DNSSERVERAPP --dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m --domain=$TENANT_ID;
+
 #PROJECT_FOLDER="DNSServerApp"
 
 #echo 'Scarico da Github'
