@@ -1,3 +1,4 @@
+# We use node 12 because knex is not compatible with node v13 and higher. 
 FROM node:12.22.1-alpine3.11
 
 ENV PROJECT_FOLDER="DNSServerApp"
@@ -31,6 +32,8 @@ RUN npm install knex -g
 
 RUN apk add openrc
 RUN apk add iptables
+
+RUN apk add dnsmasq
 
 RUN git clone https://github.com/avionic-iot-aviot/DNSServerApp /root/${PROJECT_FOLDER}
 
