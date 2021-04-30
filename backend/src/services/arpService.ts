@@ -16,7 +16,7 @@ export default class PingService {
                 const comparation = await this.compareOldAndNewObject(arpData);
                 console.log("comparation", comparation);
                 await this.saveObjectInFile(JSON.stringify(arpData));
-                console.log("PING: Verifico il se l'oggetto è cambiato -->",comparation);
+                console.log("PING: Verifico il se l'oggetto è cambiato -->", comparation);
                 //this.contactGW(arpData); // lo fa sempre
                 if (!comparation) {
                     console.log("PING: Contatto il Gateway")
@@ -100,30 +100,25 @@ export default class PingService {
     async contactGW(table: any) {
         try {
             if (table && table.mac_addresses && Object.keys(table.mac_addresses).length > 0) {
-                await Object.keys(table.mac_addresses).forEach(async (key: string) => {
-                    const ipaddrs: string[] = table.mac_addresses[key];
-                    if (ipaddrs.length > 1) {
-                        await ipaddrs.forEach(async (ip: string) => {
-                            let upaddrsToSend = ipaddrs.slice(0);
-                            _.remove(upaddrsToSend, (n: string) => {
-                                return n == ip
-                            });
-                            console.log("PING: contatto -->",`http://${ip}:${cfg.general.portGwApp}/ping`);
-                            console.log("PING: invio -->",upaddrsToSend);
-                            let request_data = {
-                                url: `http://${ip}:${cfg.general.portGwApp}/ping`,
-                                method: 'POST',
-                                body: {
-                                    params: {
-                                        ips: upaddrsToSend
-                                    }
-                                },
-                                json: true
-                            };
-                            await Utilities.request(request_data);
-                        });
-                    }
-                });
+                const ipaddrs = _.map(_.keys(table.mac_addresses), (key: string) => table.mac_addresses[key]);
+                if (ipaddrs.length > 1) {
+                    await Promise.all(_.each(ipaddrs, (receiverIp: string) => {
+                        let ipaddrsToSend = _.filter(ipaddrs, (ip: string) => ip != receiverIp);
+                        console.log("PING: contatto -->", `http://${receiverIp}:${cfg.general.portGwApp}/ping`);
+                        console.log("PING: invio -->", ipaddrsToSend);
+                        let request_data = {
+                            url: `http://${receiverIp}:${cfg.general.portGwApp}/ping`,
+                            method: 'POST',
+                            body: {
+                                params: {
+                                    ips: ipaddrsToSend
+                                }
+                            },
+                            json: true
+                        };
+                        Utilities.request(request_data);
+                    }));
+                }
             }
         } catch (error) {
             console.log("ERROR contact GW", error);
