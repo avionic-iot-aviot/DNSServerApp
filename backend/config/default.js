@@ -21,6 +21,6 @@ module.exports = {
   },
   general: {
     ipDnsServer: process.env.IPDNSSERVER,
-    hostsFolder: "~/n2n_hosts_dir"
+    hostsFolder: "/root/n2n_hosts_dir"
   }
 };

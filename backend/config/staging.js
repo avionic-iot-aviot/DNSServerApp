@@ -18,6 +18,6 @@ module.exports = {
     ipBackend: process.env.IPDBAPP,
     portBackend: "4000",
     portGwApp: "3800",
-    hostsFolder: "~/n2n_hosts_dir"
+    hostsFolder: "/root/n2n_hosts_dir"
   }
 };
