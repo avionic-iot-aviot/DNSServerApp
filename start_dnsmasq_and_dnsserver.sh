@@ -30,4 +30,5 @@ pm2 start ecosystem.config.js && \
 dnsmasq --bind-interfaces --no-hosts \
 --hostsdir=./n2n_hosts_dir --listen-address=$N2N_IP_DNSSERVERAPP \
 --dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag \
---dhcp-range=edge0,10.11.0.100,10.11.0.200,5m --domain=$TENANT_ID -k
+--dhcp-range=edge0,10.11.0.100,10.11.0.200,5m --domain=$TENANT_ID && \
+sleep infinity

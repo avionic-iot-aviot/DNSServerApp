@@ -29,10 +29,12 @@ export default class PingService {
     }
 
     saveObjectInFile(content: string) {
-        fs.writeFile("arp_object", content, function (err: any) {
-            if (err) console.log(err);
-            else console.log("file saved");
-        });
+        try {
+            fs.writeFileSync("arp_object", content);
+            console.log("saveObjectInFile: file saved");
+          } catch (err) {
+            console.log("Error in saveObjectInFile: ", err);
+          }
     }
 
     async getObjectFromFile() {
