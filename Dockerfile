@@ -27,11 +27,12 @@ RUN apk add openrc
 RUN apk add iptables
 
 RUN apk add dnsmasq
+ADD start_dnsmasq_and_dnsserver.sh /root/
 
 RUN git clone https://github.com/avionic-iot-aviot/DNSServerApp /root/${PROJECT_FOLDER}
 
+RUN cd /root/${PROJECT_FOLDER}/backend && npm install && npm run be:build
 
-COPY ["start_dnsmasq_and_dnsserver.sh" , "/root/"]
 
 WORKDIR /root
 CMD [ "/bin/ash", "./start_dnsmasq_and_dnsserver.sh" ]
