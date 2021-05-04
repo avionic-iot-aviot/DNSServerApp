@@ -17,6 +17,7 @@ module.exports = {
     ipDnsServer: process.env.IPDNSSERVER,
     ipBackend: process.env.IPDBAPP,
     portBackend: "4000",
-    portGwApp: "3800"
+    portGwApp: "3800",
+    hostsFolder: "~/n2n_hosts_dir"
   }
 };

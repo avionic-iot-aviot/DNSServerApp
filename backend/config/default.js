@@ -20,6 +20,7 @@ module.exports = {
     jwtSecret: "vtDnSsRVrai"
   },
   general: {
-    ipDnsServer: process.env.IPDNSSERVER
+    ipDnsServer: process.env.IPDNSSERVER,
+    hostsFolder: "~/n2n_hosts_dir"
   }
 };

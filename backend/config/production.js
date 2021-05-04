@@ -12,6 +12,7 @@ module.exports = {
     leases_path: "/var/lib/misc/dnsmasq.leases"
   },
   general: {
-    ipDnsServer: process.env.IPDNSSERVER
+    ipDnsServer: process.env.IPDNSSERVER,
+    hostsFolder: "~/n2n_hosts_dir"
   }
 };
