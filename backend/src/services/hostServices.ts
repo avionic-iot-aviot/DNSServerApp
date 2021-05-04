@@ -23,7 +23,7 @@ export default class DnsService {
 
   async NewRulesForHostFile(data: any) {
 
-    let devices: IHostDevice
+    let device: IHostDevice
     let flag1: boolean = false;
 
 
@@ -32,7 +32,7 @@ export default class DnsService {
     for (let i = 0; i < leases_file.length; i++) {
       console.log("1 --> " + leases_file[i].mac, " 2 --> " + data.Mac)
       if (leases_file[i].mac === data.Mac) {
-        devices = { ip: leases_file[i].ip, mac: data.Mac, host: data.HostName }
+        device = { ip: leases_file[i].ip, mac: data.Mac, host: data.HostName }
         flag1 = true;
       }
     }
@@ -41,7 +41,8 @@ export default class DnsService {
 
       try {
         const tempfilehost: any = await this.GetHostsFile()
-        await this.FindIpInToHostsFile(tempfilehost, devices)
+        await this.FindIpInToHostsFile(tempfilehost, device)
+        this.createOrUpdateHostFile(device);
       } catch (error) {
         console.log("Error HostServices", error);
       }
@@ -52,6 +53,8 @@ export default class DnsService {
       return 0;
     }
   }
+
+
   async GetHostsFile() {
     try {
       const promise: any = new Promise((resolve, reject) => {
@@ -78,6 +81,19 @@ export default class DnsService {
     }
   }
 
+
+  createOrUpdateHostFile(device: IHostDevice) {
+    try {
+      const ip_hostname = `${device.ip} ${device.host}.${process.env.TENANT_ID}\n${device.ip} ${device.host}`
+      fs.writeFile(`${cfg.general.hostsFolder}/${device.ip}`, ip_hostname, function (err) {
+        if (err) return console.log("Error when writing in createOrUpdateHostFile:", err);
+        console.log(`Added new ip for ${device.host} in file ${cfg.general.hostsFolder}/${device.ip}`);
+      });
+    } catch (err) {
+      console.log("Error in createOrUpdateHostFile: ", err);
+    }
+  }
+
   // async FindIpInToHostsFile(hostsfile: any, device: IHostDevice) {
 
   //   let flag: boolean = false
@@ -99,7 +115,7 @@ export default class DnsService {
     for (let i = 0; i < hostsfile.length; i++) {
       //console.log(i + " -> " + hostsfile[i])
       if (device.ip == hostsfile[i].ip) {
-        
+
         await this.UpdateRecordHostsFile(device, hostsfile[i].host)
 
 
