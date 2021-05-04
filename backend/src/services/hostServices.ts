@@ -42,7 +42,7 @@ export default class DnsService {
       try {
         const tempfilehost: any = await this.GetHostsFile()
         await this.FindIpInToHostsFile(tempfilehost, device)
-        this.createOrUpdateHostFile(device);
+        await this.createOrUpdateHostFile(device);
       } catch (error) {
         console.log("Error HostServices", error);
       }
@@ -82,13 +82,16 @@ export default class DnsService {
   }
 
 
-  createOrUpdateHostFile(device: IHostDevice) {
+  async createOrUpdateHostFile(device: IHostDevice) {
     try {
       const ip_hostname = `${device.ip} ${device.host}.${process.env.TENANT_ID}\n${device.ip} ${device.host}`
       fs.writeFile(`${cfg.general.hostsFolder}/${device.ip}`, ip_hostname, function (err) {
         if (err) return console.log("Error when writing in createOrUpdateHostFile:", err);
         console.log(`Added new ip for ${device.host} in file ${cfg.general.hostsFolder}/${device.ip}`);
       });
+      const { stdout2, stderr2 } = await exec(` /bin/ash -c 'kill -SIGHUP $(pidof dnsmasq)' `);
+      console.log('createOrUpdateHostFile: stdout:', stdout2);
+      console.log('createOrUpdateHostFile: stderr:', stderr2);
     } catch (err) {
       console.log("Error in createOrUpdateHostFile: ", err);
     }
