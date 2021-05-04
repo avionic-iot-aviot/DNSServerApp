@@ -19,7 +19,7 @@ export default class PingService {
                 console.log("PING: Check if it has been changed -->", comparation);
                 //this.contactGW(arpData); // lo fa sempre
                 if (!comparation) {
-                    console.log("PING: Contatto il Gateway")
+                    console.log("PING: Send to the Gateway")
                     this.contactGW(arpData);
                 }
             }
