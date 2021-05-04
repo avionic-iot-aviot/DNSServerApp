@@ -11,12 +11,12 @@ export default class PingService {
         try {
             const arpData = await this.getElementsFromArpTable();
             console.log("arpData", arpData);
-            console.log("PING: Controllo ARP table -->", arpData)
+            console.log("PING: Check ARP table -->", arpData)
             if (arpData) {
                 const comparation = await this.compareOldAndNewObject(arpData);
                 console.log("comparation", comparation);
                 await this.saveObjectInFile(JSON.stringify(arpData));
-                console.log("PING: Verifico il se l'oggetto è cambiato -->", comparation);
+                console.log("PING: Check if it has been changed -->", comparation);
                 //this.contactGW(arpData); // lo fa sempre
                 if (!comparation) {
                     console.log("PING: Contatto il Gateway")
@@ -32,9 +32,9 @@ export default class PingService {
         try {
             fs.writeFileSync("arp_object", content);
             console.log("saveObjectInFile: file saved");
-          } catch (err) {
+        } catch (err) {
             console.log("Error in saveObjectInFile: ", err);
-          }
+        }
     }
 
     async getObjectFromFile() {
@@ -106,8 +106,8 @@ export default class PingService {
                 if (ipaddrs.length > 1) {
                     await Promise.all(_.each(ipaddrs, (receiverIp: string) => {
                         let ipaddrsToSend = _.filter(ipaddrs, (ip: string) => ip != receiverIp);
-                        console.log("PING: contatto -->", `http://${receiverIp}:${cfg.general.portGwApp}/ping`);
-                        console.log("PING: invio -->", ipaddrsToSend);
+                        console.log("PING: I'll contact -->", `http://${receiverIp}:${cfg.general.portGwApp}/ping`);
+                        console.log("PING: sent to -->", ipaddrsToSend);
                         let request_data = {
                             url: `http://${receiverIp}:${cfg.general.portGwApp}/ping`,
                             method: 'POST',
