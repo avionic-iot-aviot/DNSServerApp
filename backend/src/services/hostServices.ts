@@ -81,7 +81,13 @@ export default class DnsService {
     }
   }
 
-
+  /**
+   * This function will create or update hosts files stored in the n2n_hosts_dir.
+   * Every file contains two hosts:
+   * - ip <device.current_name>.<tenant_id>
+   * - ip <device.current_name>
+   * @param device 
+   */
   async createOrUpdateHostFile(device: IHostDevice) {
     try {
       const ip_hostname = `${device.ip} ${device.host}.${process.env.TENANT_ID}\n${device.ip} ${device.host}\n`
@@ -109,6 +115,11 @@ export default class DnsService {
   //   if (flag == false) await this.InsertRecordHostsFile(device)
   // }
 
+  /**
+   * This function will modify the /etc/hosts file with the new hostnames for the given device's ip
+   * @param hostsfile 
+   * @param device 
+   */
   async FindIpInToHostsFile(hostsfile: any, device: IHostDevice) {
 
     let flag: boolean = false
