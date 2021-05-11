@@ -40,8 +40,8 @@ export default class DnsService {
     if (flag1) {
 
       try {
-        const tempfilehost: any = await this.GetHostsFile()
-        await this.FindIpInToHostsFile(tempfilehost, device)
+        //const tempfilehost: any = await this.GetHostsFile()
+        //await this.FindIpInToHostsFile(tempfilehost, device)
         await this.createOrUpdateHostFile(device);
       } catch (error) {
         console.log("Error HostServices", error);
