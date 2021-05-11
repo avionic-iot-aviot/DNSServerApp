@@ -92,9 +92,9 @@ export default class DnsService {
     try {
       const ip_hostname = `${device.ip} ${device.host}.${process.env.TENANT_ID}\n${device.ip} ${device.host}\n`
       fs.writeFileSync(`${cfg.general.hostsFolder}/${device.ip}`, ip_hostname);
-      const { stdout2, stderr2 } = await exec(` /bin/ash -c 'kill -SIGHUP $(pidof dnsmasq)' `);
-      console.log('createOrUpdateHostFile: stdout:', stdout2);
-      console.log('createOrUpdateHostFile: stderr:', stderr2);
+      // const { stdout2, stderr2 } = await exec(` /bin/ash -c 'kill -SIGHUP $(pidof dnsmasq)' `);
+      // console.log('createOrUpdateHostFile: stdout:', stdout2);
+      // console.log('createOrUpdateHostFile: stderr:', stderr2);
     } catch (err) {
       console.log("Error in createOrUpdateHostFile: ", err);
     }
