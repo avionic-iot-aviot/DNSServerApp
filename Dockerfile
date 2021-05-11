@@ -2,6 +2,7 @@
 FROM node:12.22.1-alpine3.11
 
 ENV PROJECT_FOLDER="DNSServerApp"
+ENV DNSMASQ_LOGS_FILE="/root/dnsmasq-logs"
 
 RUN apk update
 RUN apk add nano
@@ -28,6 +29,12 @@ RUN apk add iptables
 
 RUN apk add dnsmasq
 ADD start_dnsmasq_and_dnsserver.sh /root/
+
+# we create the logs file for dnsmasq
+RUN touch ${DNSMASQ_LOGS_FILE}
+
+# We need to allow dnsmasq to be able to access the folder
+RUN chmod 755 /root/ 
 
 RUN git clone https://github.com/avionic-iot-aviot/DNSServerApp /root/${PROJECT_FOLDER}
 

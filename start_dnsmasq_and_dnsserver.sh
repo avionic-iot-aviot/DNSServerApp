@@ -27,8 +27,18 @@ echo 'Avvio di deploy e dnsmasq'
 
 cd ~/$PROJECT_FOLDER/backend && \
 pm2 start ecosystem.config.js && \
-dnsmasq --bind-interfaces --no-hosts \
---hostsdir=./n2n_hosts_dir --listen-address=$N2N_IP_DNSSERVERAPP \
---dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag \
---dhcp-range=edge0,10.11.0.100,10.11.0.200,5m --domain=$TENANT_ID && \
+# dnsmasq --bind-interfaces --no-hosts \
+# --hostsdir=./n2n_hosts_dir --listen-address=$N2N_IP_DNSSERVERAPP \
+# --dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag \
+# --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m --domain=$TENANT_ID && \
+
+dnsmasq \
+--local-service \
+--listen-address=10.11.0.1 \
+--dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m \
+--no-hosts --hostsdir=/root/n2n_hosts_dir \
+--no-resolv --local=/$TENANT_ID/127.0.0.1 \
+-q --log-facility=$DNSMASQ_LOGS_FILE
+
 sleep infinity
+
