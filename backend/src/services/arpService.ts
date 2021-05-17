@@ -102,24 +102,26 @@ export default class PingService {
     async contactGW(table: any) {
         try {
             if (table && table.mac_addresses && Object.keys(table.mac_addresses).length > 0) {
-                const ipaddrs = _.map(_.keys(table.mac_addresses), (key: string) => table.mac_addresses[key]);
-                if (ipaddrs.length > 1) {
-                    await Promise.all(_.each(ipaddrs, (receiverIp: string) => {
-                        let ipaddrsToSend = _.filter(ipaddrs, (ip: string) => ip != receiverIp);
-                        console.log("PING: I'll contact -->", `http://${receiverIp}:${cfg.general.portGwApp}/ping`);
-                        console.log("PING: sent to -->", ipaddrsToSend);
-                        let request_data = {
-                            url: `http://${receiverIp}:${cfg.general.portGwApp}/ping`,
-                            method: 'POST',
-                            body: {
-                                params: {
-                                    ips: ipaddrsToSend
-                                }
-                            },
-                            json: true
-                        };
-                        Utilities.request(request_data);
-                    }));
+                for(let mac_address in table.mac_addresses) {
+                    let ipaddrs = table.mac_addresses[mac_address];
+                    if (ipaddrs.length > 1) {
+                        await Promise.all(_.each(ipaddrs, (receiverIp: string) => {
+                            let ipaddrsToSend = _.filter(ipaddrs, (ip: string) => ip != receiverIp);
+                            console.log("PING: I'll contact -->", `http://${receiverIp}:${cfg.general.portGwApp}/ping`);
+                            console.log("PING: sent to -->", ipaddrsToSend);
+                            let request_data = {
+                                url: `http://${receiverIp}:${cfg.general.portGwApp}/ping`,
+                                method: 'POST',
+                                body: {
+                                    params: {
+                                        ips: ipaddrsToSend
+                                    }
+                                },
+                                json: true
+                            };
+                            Utilities.request(request_data);
+                        }));
+                    }
                 }
             }
         } catch (error) {
