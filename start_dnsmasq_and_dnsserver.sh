@@ -6,7 +6,10 @@ mkdir n2n_hosts_dir
 touch n2n_hosts_dir/dhcpserver.agri
 echo "$N2N_IP_DNSSERVERAPP dhcpserver.$TENANT_ID" >> n2n_hosts_dir/dhcpserver.agri;
 echo "$N2N_IP_DNSSERVERAPP dhcpserver" >> n2n_hosts_dir/dhcpserver.agri;
-# dnsmasq --bind-interfaces --no-hosts --hostsdir=./n2n_hosts_dir --listen-address=$N2N_IP_DNSSERVERAPP --dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m --domain=$TENANT_ID;
+
+echo "nameserver 127.0.0.1" >> ${CUSTOM_RESOLV_FILE}
+echo $(head -n 1 /etc/resolv.conf) >> ${CUSTOM_RESOLV_FILE}
+echo "domain ${TENANT_ID}" >> ${CUSTOM_RESOLV_FILE}
 
 PROJECT_FOLDER="DNSServerApp"
 
@@ -27,18 +30,14 @@ echo 'Avvio di deploy e dnsmasq'
 
 cd ~/$PROJECT_FOLDER/backend && \
 pm2 start ecosystem.config.js && \
-# dnsmasq --bind-interfaces --no-hosts \
-# --hostsdir=./n2n_hosts_dir --listen-address=$N2N_IP_DNSSERVERAPP \
-# --dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag \
-# --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m --domain=$TENANT_ID && \
 
 dnsmasq \
 --local-service \
 --listen-address=10.11.0.1 \
 --dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m \
 --no-hosts --hostsdir=/root/n2n_hosts_dir \
---no-resolv --local=/$TENANT_ID/127.0.0.1 \
--q --log-facility=$DNSMASQ_LOGS_FILE
+--no-resolv --resolv-file=$CUSTOM_RESOLV_FILE \
+-q --log-facility=$DNSMASQ_LOGS_FILE;
 
 sleep infinity
 

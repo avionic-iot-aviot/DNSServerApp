@@ -3,6 +3,7 @@ FROM node:12.22.1-alpine3.11
 
 ENV PROJECT_FOLDER="DNSServerApp"
 ENV DNSMASQ_LOGS_FILE="/root/dnsmasq-logs"
+ENV CUSTOM_RESOLV_FILE="/root/resolv-custom.com"
 
 RUN apk update
 RUN apk add nano
@@ -32,6 +33,7 @@ ADD start_dnsmasq_and_dnsserver.sh /root/
 
 # we create the logs file for dnsmasq
 RUN touch ${DNSMASQ_LOGS_FILE}
+RUN touch ${CUSTOM_RESOLV_FILE}
 
 # We need to allow dnsmasq to be able to access the folder
 RUN chmod 755 /root/ 
