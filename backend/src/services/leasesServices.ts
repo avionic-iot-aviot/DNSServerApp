@@ -51,8 +51,8 @@ export default class LeasesServices {
         const files_to_be_deleted: string[] = _.difference(files_list, lease_ips);
         if (files_to_be_deleted.length > 0) {
             const { stdout2, stderr2 } = await exec(` /bin/ash -c 'kill -SIGHUP $(pidof dnsmasq)' `);
-            console.log('createOrUpdateHostFile: stdout:', stdout2);
-            console.log('createOrUpdateHostFile: stderr:', stderr2);
+            console.log('removeN2NHostDirsFiles: stdout:', stdout2);
+            console.log('removeN2NHostDirsFiles: stderr:', stderr2);
         }
         _.each(files_to_be_deleted, (file_name: string) => {
             fs.unlinkSync(`${n2nHostDir}/${file_name}`);
