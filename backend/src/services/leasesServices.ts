@@ -20,7 +20,7 @@ export default class LeasesServices {
         for (let i in splitted1) {
             let splitted2 = splitted1[i].split(" ");
             if (splitted2.length === 5) {
-                lease = { timestamp: splitted2[0], mac: splitted2[1], ip: splitted2[2], host: splitted2[3], id: splitted2[4] };
+                lease = { timestamp: splitted2[0], mac: splitted2[1], ip: splitted2[2], host: splitted2[3], id: splitted2[4], isStatic: false };
                 leases_file.push(lease);
             }
         }
@@ -29,7 +29,7 @@ export default class LeasesServices {
         const edgeDevices = arpData[cfg.arp.interface];
         for(let ip in edgeDevices) {
             if(!_.includes(ips, ip)) {
-                lease = { timestamp: `${Date.now()/1000}`, mac: edgeDevices['mac'], ip: edgeDevices['ip'], host: this.getHost(ip), id: edgeDevices['mac']};
+                lease = { timestamp: `${Date.now()/1000}`, mac: edgeDevices['mac'], ip: edgeDevices['ip'], host: this.getHost(ip), id: edgeDevices['mac'], isStatic: true };
                 leases_file.push(lease);
             }
         }

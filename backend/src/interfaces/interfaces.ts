@@ -10,6 +10,7 @@ export interface ILeases {
     ip: string;
     host: string;
     id: string;
+    isStatic: boolean;
 }
 
 export interface IHostDevice {
