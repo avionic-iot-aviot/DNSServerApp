@@ -20,7 +20,7 @@ export default class LeasesServices {
         for (let i in splitted1) {
             let splitted2 = splitted1[i].split(" ");
             if (splitted2.length === 5) {
-                lease = { timestamp: splitted2[0], mac: splitted2[1], ip: splitted2[2], host: splitted2[3], id: splitted2[4], isStatic: false };
+                lease = { timestamp: splitted2[0], mac: splitted2[1], ip: splitted2[2], host: splitted2[3], id: splitted2[4], isStatic: false, isADrone: false };
                 leases_file.push(lease);
             }
         }
@@ -29,7 +29,7 @@ export default class LeasesServices {
         const edgeDevices = arpData[cfg.arp.interface];
         for(let ip in edgeDevices) {
             if(!_.includes(ips, ip)) {
-                lease = { timestamp: `${Date.now()/1000}`, mac: edgeDevices[ip]['mac'], ip: edgeDevices[ip]['ip'], host: this.getHost(ip), id: edgeDevices['mac'], isStatic: true };
+                lease = { timestamp: `${Date.now()/1000}`, mac: edgeDevices[ip]['mac'], ip: edgeDevices[ip]['ip'], host: this.getHost(ip), id: edgeDevices['mac'], isStatic: true, isADrone: this.isADrone(ip) };
                 leases_file.push(lease);
             }
         }
@@ -59,6 +59,15 @@ export default class LeasesServices {
             }
         }
         return `drone-${last_number_of_ip}`;
+    }
+
+    /**
+     * Drones have ips with the foruth number higher than 20. ip <= 20 are from cluster (mlvpn and such). 
+     * @param ip 
+     */
+     isADrone(ip: string): boolean {
+        const last_number_of_ip = parseInt(ip.split('.')[3]);
+        return last_number_of_ip > 20;
     }
 
     // We create the list of files we have in the n2n_hosts_dir and we delete

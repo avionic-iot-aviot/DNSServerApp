@@ -11,6 +11,7 @@ export interface ILeases {
     host: string;
     id: string;
     isStatic: boolean;
+    isADrone: boolean;
 }
 
 export interface IHostDevice {
