@@ -19,5 +19,11 @@ module.exports = {
     portBackend: "4000",
     portGwApp: "3800",
     hostsFolder: "/root/n2n_hosts_dir"
+  },
+  static_ips: {
+    "10.11.0.2": "roscore",
+    "10.11.0.3": "janus",
+    "10.11.0.4": "rosnodejs",
+    "10.11.0.5": "mlvpn"
   }
 };

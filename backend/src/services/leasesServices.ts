@@ -1,4 +1,4 @@
-const arp1 = require('arp-a');
+const arp = require('arp-a');
 const cfg = require('config');
 const equal = require('deep-equal');
 const fs = require('fs');
@@ -24,6 +24,15 @@ export default class LeasesServices {
                 leases_file.push(lease);
             }
         }
+        const ips = _.map(leases_file, (lease) => lease.ip);
+        const arpData = await this.retrieveArpTableIps();
+        const edgeDevices = arpData[cfg.arp.interface];
+        for(let ip in edgeDevices) {
+            if(!_.includes(ips, ip)) {
+                lease = { timestamp: `${Date.now()/1000}`, mac: edgeDevices['mac'], ip: edgeDevices['ip'], host: this.getHost(ip), id: edgeDevices['mac']};
+                leases_file.push(lease);
+            }
+        }
         console.log("Lease file content: ", leases_file);
         if (db) {
             const lease_ips: string[] = _.map(leases_file, (lease) => lease.ip);
@@ -33,6 +42,23 @@ export default class LeasesServices {
         } else {
             return leases_file
         }
+    }
+
+    /**
+     * Some devices will have a specific hostname (such as mlvpn). Others will get a temp name.
+     * This is needed for devices which have a static ip. We don't have their hostnames in the arp table.
+     * @param ip 
+     */
+    getHost(ip: string): string {
+        const last_number_of_ip = parseInt(ip.split('.')[3]);
+        if(last_number_of_ip <= 20) {
+            if(cfg.static_ips[ip]) {
+                return cfg.static_ips[ip];
+            } else {
+                return `cluster-node-${last_number_of_ip}`;
+            }
+        }
+        return `drone-${last_number_of_ip}`;
     }
 
     // We create the list of files we have in the n2n_hosts_dir and we delete
@@ -72,5 +98,34 @@ export default class LeasesServices {
         };
         await Utilities.request(request_data);
         console.log("DnsService - SendPostResponse: Post send! " + `(http://${cfg.general.ipBackend}:${cfg.general.portBackend}/leases/refresh)`)
+    }
+
+    /**
+     * We read the ARP table to get all the devices in there. It is possible that
+     * few devices will have static ips, so we need to read them from the ARP-table
+     * @returns 
+     */
+    async retrieveArpTableIps() {
+        try {
+            const promise = new Promise((resolve, reject) => {
+                let tbl = {};
+
+                arp.table(function (err, entry) {
+                    if (!!err) return console.log('arp: ' + err.message);
+                    if (!entry) return;
+
+                    if (!tbl[entry.iface]) tbl[entry.iface] = {};
+                    tbl[entry.iface][entry.ip] = {
+                        mac: entry.mac,
+                        ip: entry.ip
+                    }
+                    resolve(tbl);
+                });
+            });
+            return promise;
+        } catch (error) {
+            console.log("ERRR", error);
+            return null;
+        }
     }
 }
