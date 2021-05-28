@@ -12,7 +12,7 @@ import { ILeases } from "../interfaces/interfaces";
 
 export default class LeasesServices {
     async leasesServices(db: boolean) {
-        let leases_file: ILeases[] = new Array();
+        let leases_file: ILeases[] = this.initializeLeasesArray();
         let lease: ILeases;
         let data = fs.readFileSync('/var/lib/misc/dnsmasq.leases', 'utf8');
         //console.log('Leases', data);
@@ -27,9 +27,9 @@ export default class LeasesServices {
         const ips = _.map(leases_file, (lease) => lease.ip);
         const arpData = await this.retrieveArpTableIps();
         const edgeDevices = arpData[cfg.arp.interface];
-        for(let ip in edgeDevices) {
-            if(!_.includes(ips, ip)) {
-                lease = { timestamp: `${Date.now()/1000}`, mac: edgeDevices[ip]['mac'], ip: edgeDevices[ip]['ip'], host: this.getHost(ip), id: edgeDevices['mac'], isStatic: true, isADrone: this.isADrone(ip) };
+        for (let ip in edgeDevices) {
+            if (!_.includes(ips, ip)) {
+                lease = { timestamp: `${Date.now() / 1000}`, mac: edgeDevices[ip]['mac'], ip: edgeDevices[ip]['ip'], host: this.getHost(ip), id: edgeDevices['mac'], isStatic: true, isADrone: this.isADrone(ip) };
                 leases_file.push(lease);
             }
         }
@@ -45,14 +45,36 @@ export default class LeasesServices {
     }
 
     /**
+     * This method initialize the leases_file variable. It creates
+     * the lease element rappresenting the dnsserverapp and appends it to the leases_file.
+     * @returns 
+     */
+    initializeLeasesArray(): ILeases[] {
+        let leases_file: ILeases[] = new Array();
+
+        let dnsmasq_lease: ILeases = {
+            id: process.env.MAC_ADDRESS_DNSSERVERAPP,
+            mac: process.env.MAC_ADDRESS_DNSSERVERAPP,
+            ip: process.env.N2N_IP_DNSSERVERAPP,
+            host: "dhcp-dns-server",
+            isStatic: true,
+            isADrone: false,
+            timestamp: `${Date.now() / 1000}`
+        }
+        leases_file.push(dnsmasq_lease);
+
+        return leases_file;
+    }
+
+    /**
      * Some devices will have a specific hostname (such as mlvpn). Others will get a temp name.
      * This is needed for devices which have a static ip. We don't have their hostnames in the arp table.
      * @param ip 
      */
     getHost(ip: string): string {
         const last_number_of_ip = parseInt(ip.split('.')[3]);
-        if(last_number_of_ip <= 20) {
-            if(cfg.static_ips[ip]) {
+        if (last_number_of_ip <= 20) {
+            if (cfg.static_ips[ip]) {
                 return cfg.static_ips[ip];
             } else {
                 return `cluster-node-${last_number_of_ip}`;
@@ -65,7 +87,7 @@ export default class LeasesServices {
      * Drones have ips with the foruth number higher than 20. ip <= 20 are from cluster (mlvpn and such). 
      * @param ip 
      */
-     isADrone(ip: string): boolean {
+    isADrone(ip: string): boolean {
         const last_number_of_ip = parseInt(ip.split('.')[3]);
         return last_number_of_ip > 20;
     }
