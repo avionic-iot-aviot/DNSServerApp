@@ -74,10 +74,17 @@ export default class LeasesServices {
     getHost(ip: string): string {
         const last_number_of_ip = parseInt(ip.split('.')[3]);
         if (last_number_of_ip <= 20) {
-            if (cfg.static_ips[ip]) {
-                return cfg.static_ips[ip];
-            } else {
-                return `cluster-node-${last_number_of_ip}`;
+            switch (ip) {
+                case process.env.N2N_IP_ROSCORE:
+                    return 'roscore';
+                case process.env.N2N_IP_JANUS:
+                    return 'janus';
+                case process.env.N2N_IP_ROSNODEJS:
+                    return 'rosnodejs';
+                case process.env.N2N_IP_MLVPN:
+                    return 'mlvpn';
+                default:
+                    return `cluster-node-${last_number_of_ip}`;
             }
         }
         return `drone-${last_number_of_ip}`;
