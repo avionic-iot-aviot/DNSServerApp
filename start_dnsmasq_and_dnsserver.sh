@@ -3,7 +3,7 @@ iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
 #Setting up MAC env
 echo "export MAC_ADDRESS_DNSSERVERAPP=\"$(ifconfig edge0 | grep 'HWaddr ' | awk '{ print $5}')\"" >> /etc/profile;
-source /etc/profile
+. /etc/profile
 
 #Setup dnsmasq server
 mkdir n2n_hosts_dir
