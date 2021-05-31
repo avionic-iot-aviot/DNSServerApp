@@ -5,8 +5,16 @@ const cfg = require('config');
 import LeasesService from '../services/leasesServices';
 const leasesService = new LeasesService();
 
+function updateLeases() {
+    leasesService.leasesServices(true);
+    setInterval(updateLeases, 60 * 3 * 1000); // 3 minutes
+}
+
 
 fs.watchFile(cfg.watcher_leases.path_to_watch, (curr: any, prev: any) => {
     console.log(`[${new Date().toLocaleString()}] Watching for file changes on: ${cfg.watcher_leases.path_to_watch}`);
     leasesService.leasesServices(true);
 })
+
+updateLeases();
+

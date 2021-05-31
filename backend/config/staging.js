@@ -11,7 +11,8 @@ module.exports = {
     path_to_watch: "/proc/net/arp"
   },
   watcher_leases: {
-    path_to_watch: "/var/lib/misc/dnsmasq.leases"
+    path_to_watch: "/var/lib/misc/dnsmasq.leases",
+    refresh_time: 60 * 3 * 1000, // 3 minutes
   },
   general: {
     ipDnsServer: process.env.IPDNSSERVER,
