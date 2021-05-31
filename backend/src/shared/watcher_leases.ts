@@ -6,8 +6,9 @@ import LeasesService from '../services/leasesServices';
 const leasesService = new LeasesService();
 
 function updateLeases() {
+    console.log(`[${new Date().toLocaleString()}] Scheduled updateLease operation. Watching for file changes on: ${cfg.watcher_leases.path_to_watch}`);
     leasesService.leasesServices(true);
-    setInterval(updateLeases, 60 * 3 * 1000); // 3 minutes
+    setInterval(updateLeases, cfg.watcher_leases.refresh_time);
 }
 
 
