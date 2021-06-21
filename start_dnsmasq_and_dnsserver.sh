@@ -41,6 +41,7 @@ dnsmasq \
 --dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m \
 --no-hosts --hostsdir=/root/n2n_hosts_dir \
 --no-resolv --resolv-file=$CUSTOM_RESOLV_FILE \
+--server=1.1.1.1 \
 -q --log-facility=$DNSMASQ_LOGS_FILE;
 
 sleep infinity
