@@ -59,7 +59,8 @@ export default class LeasesServices {
             host: "dhcp-dns-server",
             isStatic: true,
             isADrone: false,
-            timestamp: `${Date.now() / 1000}`
+            timestamp: `${Date.now() / 1000}`, 
+            isActive: true
         }
         leases_file.push(dnsmasq_lease);
 
