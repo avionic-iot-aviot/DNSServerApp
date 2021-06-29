@@ -29,7 +29,7 @@ export default class LeasesServices {
         const edgeDevices = arpData[cfg.arp.interface];
         for (let ip in edgeDevices) {
             if (!_.includes(ips, ip)) {
-                lease = { timestamp: `${Date.now() / 1000}`, mac: edgeDevices[ip]['mac'], ip: edgeDevices[ip]['ip'], host: this.getHost(ip), id: edgeDevices['mac'], isStatic: true, isADrone: this.isADrone(ip) };
+                lease = { timestamp: `${Date.now() / 1000}`, mac: edgeDevices[ip]['mac'], ip: edgeDevices[ip]['ip'], host: this.getHost(ip), id: edgeDevices['mac'], isStatic: true, isADrone: this.isADrone(ip), isActive: true };
                 leases_file.push(lease);
             }
         }
