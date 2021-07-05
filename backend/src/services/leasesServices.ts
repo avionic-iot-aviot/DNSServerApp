@@ -20,7 +20,7 @@ export default class LeasesServices {
         for (let i in splitted1) {
             let splitted2 = splitted1[i].split(" ");
             if (splitted2.length === 5) {
-                lease = { timestamp: splitted2[0], mac: splitted2[1], ip: splitted2[2], host: splitted2[3], copterID: splitted2[4], isStatic: false, isADevice: true, isActive: true };
+                lease = { timestamp: splitted2[0], mac: splitted2[1], ip: splitted2[2], host: splitted2[3], copterID: splitted2[1], isStatic: false, isADevice: true, isActive: true };
                 leases_file.push(lease);
             }
         }
@@ -34,7 +34,7 @@ export default class LeasesServices {
             }
         }
 
-        leases_file = this.replaceCopterID(leases_file);
+        //leases_file = this.replaceCopterID(leases_file);
 
         console.log("Lease file content: ", leases_file);
         if (db) {

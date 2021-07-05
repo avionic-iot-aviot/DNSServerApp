@@ -22,6 +22,7 @@ export default class PingService {
                     console.log("PING: Send to the Gateway")
                     this.contactGW(arpData);
                 }
+                await this.updateCopterID(arpData['mac_addresses']);
             }
         } catch (error) {
             console.log("error", error);
@@ -102,7 +103,7 @@ export default class PingService {
     async contactGW(table: any) {
         try {
             if (table && table.mac_addresses && Object.keys(table.mac_addresses).length > 0) {
-                for(let mac_address in table.mac_addresses) {
+                for (let mac_address in table.mac_addresses) {
                     let ipaddrs = table.mac_addresses[mac_address];
                     if (ipaddrs.length > 1) {
                         await Promise.all(_.each(ipaddrs, (receiverIp: string) => {
@@ -127,5 +128,22 @@ export default class PingService {
         } catch (error) {
             console.log("ERROR contact GW", error);
         }
+    }
+
+    /**
+     * This method will be used to send the mac_addresses found inside the arp table to the DBApp.
+     * If needed the DBApp will update copterIDs for the devices.
+     * @param mac_addresses 
+     */
+    async updateCopterID(mac_addresses) {
+        let request_data = {
+            url: `http://${cfg.general.ipBackend}:${cfg.general.portBackend}/leases/refreshCopterIDs`,
+            method: 'POST',
+            body: {
+                params: mac_addresses
+            },
+            json: true
+        };
+        await Utilities.request(request_data);
     }
 }
