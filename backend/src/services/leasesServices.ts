@@ -29,7 +29,7 @@ export default class LeasesServices {
         const edgeDevices = arpData[cfg.arp.interface]; //this is a JSON having ips as keys and jsons as values
         for (let ip in edgeDevices) { //we are cycling over the keys instead of the values
             if (!_.includes(ips, ip)) {
-                lease = { timestamp: `${Date.now() / 1000}`, mac: edgeDevices[ip]['mac'], ip: edgeDevices[ip]['ip'], host: this.getHost(ip), copterID: edgeDevices['mac'], isStatic: true, isADevice: this.isADevice(ip), isActive: true };
+                lease = { timestamp: `${Date.now() / 1000}`, mac: edgeDevices[ip]['mac'], ip: edgeDevices[ip]['ip'], host: this.getHost(ip), copterID: edgeDevices[ip]['mac'], isStatic: true, isADevice: this.isADevice(ip), isActive: true };
                 leases_file.push(lease);
             }
         }
