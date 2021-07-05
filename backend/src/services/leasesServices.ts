@@ -54,7 +54,7 @@ export default class LeasesServices {
         let leases_file: ILeases[] = new Array();
 
         let dnsmasq_lease: ILeases = {
-            id: process.env.MAC_ADDRESS_DNSSERVERAPP.toLowerCase(),
+            copterID: process.env.MAC_ADDRESS_DNSSERVERAPP.toLowerCase(),
             mac: process.env.MAC_ADDRESS_DNSSERVERAPP.toLowerCase(),
             ip: process.env.N2N_IP_DNSSERVERAPP,
             host: "dhcp-dns-server",
