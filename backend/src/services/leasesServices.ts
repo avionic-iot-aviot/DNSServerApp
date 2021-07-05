@@ -34,6 +34,8 @@ export default class LeasesServices {
             }
         }
 
+        leases_file = this.replaceCopterID(leases_file);
+
         console.log("Lease file content: ", leases_file);
         if (db) {
             const lease_ips: string[] = _.map(leases_file, (lease) => lease.ip);
@@ -43,6 +45,30 @@ export default class LeasesServices {
         } else {
             return leases_file;
         }
+    }
+
+    /**
+     * 
+     * @returns 
+     */
+    replaceCopterID(leases_file: ILeases[]): ILeases[] {
+        let arpObjectStringified = fs.readFileSync('arp_object', 'utf8');
+        if(arpObjectStringified){
+            const arpObject = JSON.parse(arpObjectStringified);
+            const new_leases_file: ILeases[] = [];
+            for(let lease of leases_file) {
+                for(let mac_address in arpObject['mac_addresses']) {
+                    if(_.includes(arpObject['mac_addresses'][mac_address], lease.ip)) {
+                        lease.copterID = mac_address;
+                        break;
+                    }
+                    new_leases_file.push(lease);
+                }
+                new_leases_file;
+            }
+            return new_leases_file;
+        }
+        return leases_file;
     }
 
     /**
