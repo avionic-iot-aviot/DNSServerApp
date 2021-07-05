@@ -20,7 +20,7 @@ export default class LeasesServices {
         for (let i in splitted1) {
             let splitted2 = splitted1[i].split(" ");
             if (splitted2.length === 5) {
-                lease = { timestamp: splitted2[0], mac: splitted2[1], ip: splitted2[2], host: splitted2[3], id: splitted2[4], isStatic: false, isADrone: true, isActive: true };
+                lease = { timestamp: splitted2[0], mac: splitted2[1], ip: splitted2[2], host: splitted2[3], id: splitted2[4], isStatic: false, isADevice: true, isActive: true };
                 leases_file.push(lease);
             }
         }
@@ -29,7 +29,7 @@ export default class LeasesServices {
         const edgeDevices = arpData[cfg.arp.interface];
         for (let ip in edgeDevices) {
             if (!_.includes(ips, ip)) {
-                lease = { timestamp: `${Date.now() / 1000}`, mac: edgeDevices[ip]['mac'], ip: edgeDevices[ip]['ip'], host: this.getHost(ip), id: edgeDevices['mac'], isStatic: true, isADrone: this.isADrone(ip), isActive: true };
+                lease = { timestamp: `${Date.now() / 1000}`, mac: edgeDevices[ip]['mac'], ip: edgeDevices[ip]['ip'], host: this.getHost(ip), id: edgeDevices['mac'], isStatic: true, isADevice: this.isADevice(ip), isActive: true };
                 leases_file.push(lease);
             }
         }
@@ -58,7 +58,7 @@ export default class LeasesServices {
             ip: process.env.N2N_IP_DNSSERVERAPP,
             host: "dhcp-dns-server",
             isStatic: true,
-            isADrone: false,
+            isADevice: false,
             timestamp: `${Date.now() / 1000}`, 
             isActive: true
         }
@@ -95,7 +95,7 @@ export default class LeasesServices {
      * Drones have ips with the foruth number higher than 20. ip <= 20 are from cluster (mlvpn and such). 
      * @param ip 
      */
-    isADrone(ip: string): boolean {
+    isADevice(ip: string): boolean {
         const last_number_of_ip = parseInt(ip.split('.')[3]);
         return last_number_of_ip > 20;
     }
