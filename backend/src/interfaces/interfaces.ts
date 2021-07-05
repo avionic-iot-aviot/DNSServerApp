@@ -9,10 +9,10 @@ export interface ILeases {
     mac: string;
     ip: string;
     host: string;
-    id: string;
     isStatic: boolean;
     isADevice: boolean;
     isActive: boolean;
+    copterID: string;
 }
 
 export interface IHostDevice {

@@ -20,27 +20,28 @@ export default class LeasesServices {
         for (let i in splitted1) {
             let splitted2 = splitted1[i].split(" ");
             if (splitted2.length === 5) {
-                lease = { timestamp: splitted2[0], mac: splitted2[1], ip: splitted2[2], host: splitted2[3], id: splitted2[4], isStatic: false, isADevice: true, isActive: true };
+                lease = { timestamp: splitted2[0], mac: splitted2[1], ip: splitted2[2], host: splitted2[3], copterID: splitted2[4], isStatic: false, isADevice: true, isActive: true };
                 leases_file.push(lease);
             }
         }
         const ips = _.map(leases_file, (lease) => lease.ip);
         const arpData = await this.retrieveArpTableIps();
-        const edgeDevices = arpData[cfg.arp.interface];
-        for (let ip in edgeDevices) {
+        const edgeDevices = arpData[cfg.arp.interface]; //this is a JSON having ips as keys and jsons as values
+        for (let ip in edgeDevices) { //we are cycling over the keys instead of the values
             if (!_.includes(ips, ip)) {
-                lease = { timestamp: `${Date.now() / 1000}`, mac: edgeDevices[ip]['mac'], ip: edgeDevices[ip]['ip'], host: this.getHost(ip), id: edgeDevices['mac'], isStatic: true, isADevice: this.isADevice(ip), isActive: true };
+                lease = { timestamp: `${Date.now() / 1000}`, mac: edgeDevices[ip]['mac'], ip: edgeDevices[ip]['ip'], host: this.getHost(ip), copterID: edgeDevices['mac'], isStatic: true, isADevice: this.isADevice(ip), isActive: true };
                 leases_file.push(lease);
             }
         }
+
         console.log("Lease file content: ", leases_file);
         if (db) {
             const lease_ips: string[] = _.map(leases_file, (lease) => lease.ip);
             await this.removeN2NHostDirsFiles(lease_ips);
             await this.SendPostToDb(leases_file);
-            return leases_file
+            return leases_file;
         } else {
-            return leases_file
+            return leases_file;
         }
     }
 
