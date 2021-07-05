@@ -48,8 +48,9 @@ export default class LeasesServices {
     }
 
     /**
-     * 
-     * @returns 
+     * This method reads arp_object and determines which copterID to assign to each device.
+     * A device can be a gw (copterID = mac_address) or fccs/sensor/camera (copterID = mac_address of its gw)
+     * @returns A new lease_file if arp_object is not empty
      */
     replaceCopterID(leases_file: ILeases[]): ILeases[] {
         let arpObjectStringified = fs.readFileSync('arp_object', 'utf8');
