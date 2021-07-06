@@ -136,14 +136,22 @@ export default class PingService {
      * @param mac_addresses 
      */
     async updateCopterID(mac_addresses) {
-        let request_data = {
-            url: `http://${cfg.general.ipBackend}:${cfg.general.portBackend}/leases/refreshCopterIDs`,
-            method: 'POST',
-            body: {
-                params: mac_addresses
-            },
-            json: true
-        };
-        await Utilities.request(request_data);
+        var drones_mac_addresses = {}
+        for (let mac in mac_addresses) {
+            if (mac_addresses[mac].length > 1) {
+                drones_mac_addresses[mac] = mac_addresses[mac];
+            }
+        }
+        if (Object.keys(drones_mac_addresses).length > 1) {
+            let request_data = {
+                url: `http://${cfg.general.ipBackend}:${cfg.general.portBackend}/leases/refreshCopterIDs`,
+                method: 'POST',
+                body: {
+                    params: drones_mac_addresses
+                },
+                json: true
+            };
+            await Utilities.request(request_data);
+        }
     }
 }
