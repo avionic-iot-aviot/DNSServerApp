@@ -12,7 +12,7 @@ module.exports = {
   },
   watcher_leases: {
     path_to_watch: "/var/lib/misc/dnsmasq.leases",
-    refresh_time: 60 * 3 * 1000, // 3 minutes
+    refresh_time: 30 * 1000, // 30 seconds
   },
   general: {
     ipDnsServer: process.env.IPDNSSERVER,

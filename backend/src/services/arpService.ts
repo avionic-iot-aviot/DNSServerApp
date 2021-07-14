@@ -142,7 +142,7 @@ export default class PingService {
                 drones_mac_addresses[mac] = mac_addresses[mac];
             }
         }
-        if (Object.keys(drones_mac_addresses).length > 1) {
+        if (Object.keys(drones_mac_addresses).length > 0) {
             let request_data = {
                 url: `http://${cfg.general.ipBackend}:${cfg.general.portBackend}/leases/refreshCopterIDs`,
                 method: 'POST',
