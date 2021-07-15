@@ -12,8 +12,8 @@ const leasesService = new LeasesService();
 function updateLeases() {
     console.log(`[${new Date().toLocaleString()}] Scheduled updateLease operation. Watching for file changes on: ${cfg.watcher_leases.path_to_watch}`);
     leasesService.leasesServices(true);
-    setTimeout(updateLeases, cfg.watcher_leases.refresh_time);
 }
+setInterval(updateLeases, cfg.watcher_leases.refresh_time);
 
 
 fs.watchFile(cfg.watcher_leases.path_to_watch, (curr: any, prev: any) => {
@@ -21,5 +21,4 @@ fs.watchFile(cfg.watcher_leases.path_to_watch, (curr: any, prev: any) => {
     leasesService.leasesServices(true);
 })
 
-updateLeases();
 
