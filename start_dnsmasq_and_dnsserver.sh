@@ -38,7 +38,7 @@ pm2 start ecosystem.config.js && \
 dnsmasq \
 --local-service \
 --listen-address=10.11.0.1 \
---dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag --dhcp-range=edge0,10.11.0.100,10.11.0.200,5m \
+--dhcp-mac=set:broadtag,*:*:*:*:*:* --dhcp-broadcast=tag:broadtag --dhcp-range=edge0,10.11.0.100,10.11.0.200,2m \
 --no-hosts --hostsdir=/root/n2n_hosts_dir \
 --no-resolv --resolv-file=$CUSTOM_RESOLV_FILE \
 --server=1.1.1.1 \
