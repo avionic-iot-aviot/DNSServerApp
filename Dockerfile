@@ -3,7 +3,7 @@ FROM node:12.22.1-alpine3.11
 
 ENV PROJECT_FOLDER="DNSServerApp"
 ENV DNSMASQ_LOGS_FILE="/root/dnsmasq-logs"
-ENV CUSTOM_RESOLV_FILE="/root/resolv-custom.com"
+ENV CUSTOM_RESOLV_FILE="/root/resolv-custom.conf"
 
 RUN apk update
 RUN apk add nano
