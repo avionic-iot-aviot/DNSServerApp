@@ -116,6 +116,8 @@ export default class LeasesServices {
                     return 'rosnodejs';
                 case process.env.N2N_IP_MLVPN:
                     return 'mlvpn';
+                case process.env.N2N_IP_NGINX:
+                    return 'nginx';
                 default:
                     return `cluster-node-${last_number_of_ip}`;
             }
