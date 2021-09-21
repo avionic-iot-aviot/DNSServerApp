@@ -7,7 +7,7 @@ echo "export MAC_ADDRESS_DNSSERVERAPP=\"$(ifconfig edge0 | grep 'HWaddr ' | awk 
 
 #Setup dnsmasq server
 mkdir n2n_hosts_dir
-touch n2n_hosts_dir/dhcpserver.agri
+touch n2n_hosts_dir/dhcpserver.$TENANT_ID
 echo "$N2N_IP_DNSSERVERAPP dhcpserver.$TENANT_ID" >> n2n_hosts_dir/dhcpserver.agri;
 echo "$N2N_IP_DNSSERVERAPP dhcpserver" >> n2n_hosts_dir/dhcpserver.agri;
 
@@ -42,6 +42,8 @@ dnsmasq \
 --no-hosts --hostsdir=/root/n2n_hosts_dir \
 --no-resolv --resolv-file=$CUSTOM_RESOLV_FILE \
 --server=1.1.1.1 \
+--domain-needed --bogus-priv \
+--domain=$TENANT_ID
 -q --log-facility=$DNSMASQ_LOGS_FILE;
 
 sleep infinity
