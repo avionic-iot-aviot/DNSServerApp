@@ -43,7 +43,7 @@ dnsmasq \
 --no-resolv --resolv-file=$CUSTOM_RESOLV_FILE \
 --server=1.1.1.1 \
 --domain-needed --bogus-priv \
---domain=$TENANT_ID
+--domain=$TENANT_ID --local=/$TENANT_ID/ \
 -q --log-facility=$DNSMASQ_LOGS_FILE;
 
 sleep infinity
