@@ -88,7 +88,7 @@ export default class LeasesServices {
             copterID: process.env.MAC_ADDRESS_DNSSERVERAPP.toLowerCase(),
             mac: process.env.MAC_ADDRESS_DNSSERVERAPP.toLowerCase(),
             ip: process.env.N2N_IP_DNSSERVERAPP,
-            host: "dhcp-dns-server",
+            host: "dhcp-server-aviot",
             isStatic: true,
             isADevice: false,
             timestamp: `${Date.now() / 1000}`,
@@ -109,15 +109,15 @@ export default class LeasesServices {
         if (last_number_of_ip <= 20) {
             switch (ip) {
                 case process.env.N2N_IP_ROSCORE:
-                    return 'roscore';
+                    return 'roscore-aviot';
                 case process.env.N2N_IP_JANUS:
-                    return 'janus';
+                    return 'janus-aviot';
                 case process.env.N2N_IP_ROSNODEJS:
-                    return 'rosnodejs';
+                    return 'rosnodejs-aviot';
                 case process.env.N2N_IP_MLVPN:
-                    return 'mlvpn';
+                    return 'mlvpn-aviot';
                 case process.env.N2N_IP_NGINX:
-                    return 'nginx';
+                    return 'tetracam-nginx-aviot';
                 default:
                     return `cluster-node-${last_number_of_ip}`;
             }
