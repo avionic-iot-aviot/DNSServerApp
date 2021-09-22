@@ -122,7 +122,7 @@ export default class LeasesServices {
                     return `cluster-node-${last_number_of_ip}`;
             }
         }
-        return `drone-${last_number_of_ip}`;
+        return `device-${last_number_of_ip}`;
     }
 
     /**
