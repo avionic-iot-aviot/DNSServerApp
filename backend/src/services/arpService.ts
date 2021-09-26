@@ -17,11 +17,11 @@ export default class PingService {
                 console.log("comparation", comparation);
                 await this.saveObjectInFile(JSON.stringify(arpData));
                 console.log("PING: Check if it has been changed -->", comparation);
-                //this.contactGW(arpData); // lo fa sempre
-                if (!comparation) {
+                this.contactGW(arpData); // lo fa sempre
+                /*if (!comparation) {
                     console.log("PING: Send to the Gateway")
                     this.contactGW(arpData);
-                }
+                }*/
                 await this.updateCopterID(arpData['mac_addresses']);
             }
         } catch (error) {
